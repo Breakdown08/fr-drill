@@ -1,0 +1,28 @@
+{
+  "source": "test fixture",
+  "note": "Two lessons: one with cards, one drilled on its own tab (numbers).",
+  "lessons": [
+    {
+      "n": 1,
+      "fr": "Les animaux",
+      "ru": "Животные",
+      "words": [
+        {"fr": "le chat", "ru": "кот", "g": "m"},
+        {"fr": "le chien", "ru": "собака", "g": "m"},
+        {"fr": "la vache", "ru": "корова", "g": "f"},
+        {"fr": "le cheval", "ru": "лошадь", "g": "m"},
+        {"fr": "l'oiseau", "ru": "птица", "g": "m"}
+      ]
+    },
+    {
+      "n": 4,
+      "fr": "Nombres",
+      "ru": "Числа",
+      "own_drill": "numbers",
+      "words": [
+        {"fr": "deux", "ru": "два"},
+        {"fr": "trois", "ru": "три"}
+      ]
+    }
+  ]
+}
