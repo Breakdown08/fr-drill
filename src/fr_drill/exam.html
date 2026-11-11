@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Test A1</title>
+<style>
+  :root {
+    --bg: #f6f4ef; --card: #ffffff; --fg: #1d1d1f; --muted: #6b6b70; --line: #e2dfd8;
+    --ok: #1f7a3a; --ok-bg: #e5f4e9; --bad: #b3261e; --bad-bg: #fbe9e7; --accent: #2b4c9b;
+    --wait: #8a5a00; --wait-bg: #fbf1dc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #16171a; --card: #202227; --fg: #ececef; --muted: #9a9aa3; --line: #33363d;
+      --ok: #7fd49a; --ok-bg: #1d3325; --bad: #ff8a80; --bad-bg: #3a2222; --accent: #8fb0ff;
+      --wait: #f0c36a; --wait-bg: #3a3020; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+    font: 18px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 680px; margin: 0 auto; padding: 32px 16px 80px; }
+  header { display: flex; justify-content: space-between; align-items: baseline; color: var(--muted); margin-bottom: 20px; }
+  header b { color: var(--fg); font-size: 22px; }
+  h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 32px 0 10px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; margin-bottom: 12px; }
+  .card.ok { border-color: var(--ok); }
+  .card.bad { border-color: var(--bad); }
+  .card.wait { border-color: var(--wait); }
+  .consigne { font-weight: 600; }
+  .consigne .ru { display: block; color: var(--muted); font-weight: 400; font-size: 15px; }
+  .prompt { font-size: 22px; margin: 10px 0 12px; }
+  .doc { background: var(--card); border: 1px dashed var(--line); border-radius: 14px; padding: 18px 22px;
+    margin-bottom: 12px; white-space: pre-line; font-family: Georgia, "Times New Roman", serif; font-size: 19px; }
+  .doc i { display: block; font-family: system-ui, sans-serif; font-style: normal; font-size: 12px; text-transform: uppercase;
+    letter-spacing: .08em; color: var(--muted); margin-bottom: 6px; }
+  label.opt { display: flex; gap: 10px; align-items: center; padding: 8px 12px; border: 1px solid var(--line);
+    border-radius: 10px; margin: 6px 0; cursor: pointer; }
+  label.opt:hover { border-color: var(--accent); }
+  label.opt.right { border-color: var(--ok); background: var(--ok-bg); }
+  label.opt.wrong { border-color: var(--bad); background: var(--bad-bg); }
+  input[type=text], textarea { width: 100%; font: inherit; font-size: 20px; padding: 10px 12px; border-radius: 10px;
+    border: 2px solid var(--line); background: var(--bg); color: var(--fg); outline: none; }
+  textarea { min-height: 200px; font-size: 18px; resize: vertical; }
+  input:focus, textarea:focus { border-color: var(--accent); }
+  ul.points { margin: 4px 0 12px; padding-left: 20px; color: var(--muted); }
+  .count { color: var(--muted); font-size: 15px; margin-top: 6px; }
+  .count.short { color: var(--bad); }
+  .result { margin-top: 12px; font-size: 16px; }
+  .result .ok { color: var(--ok); font-weight: 600; }
+  .result .bad { color: var(--bad); font-weight: 600; }
+  .result .wait { color: var(--wait); font-weight: 600; }
+  .result .why { color: var(--muted); display: block; margin-top: 4px; }
+  button { font: inherit; border: 1px solid var(--accent); background: var(--accent); color: var(--card);
+    border-radius: 10px; padding: 12px 22px; cursor: pointer; }
+  button:disabled { opacity: .5; cursor: default; }
+  .bar { position: sticky; bottom: 0; background: var(--bg); padding: 14px 0; display: flex; gap: 14px; align-items: center; }
+  .hint { color: var(--muted); font-size: 15px; }
+  .score { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; margin-bottom: 20px; }
+  .score b { font-size: 30px; }
+  .error { color: var(--bad); }
+</style>
+</head>
+<body>
+<main>
+  <header><b>Test A1</b><span id="meta"></span></header>
+  <div id="score" class="score" hidden></div>
+  <form id="form"></form>
+  <div class="bar"><button id="send" type="button" disabled>Сдать тест</button><span id="hint" class="hint"></span></div>
+</main>
+<script>
+const KINDS = {empty: "нет ответа", accent: "акцент", wrong: "неверно", format: "не похоже на число или время",
+  pending: "ждёт проверки", short: "меньше минимума слов — ждёт проверки"};
+const PARTS = {practice: "Грамматика и слова", ce: "Чтение", pe: "Письмо"};
+const form = document.getElementById("form"), send = document.getElementById("send"), hint = document.getElementById("hint");
+let test = null;
+
+function el(tag, attrs = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) k === "class" ? e.className = v : e.setAttribute(k, v);
+  for (const k of kids) e.append(k);
+  return e;
+}
+const words = s => s.split(/\s+/).filter(Boolean).length;
+
+function render(t) {
+  test = t;
+  document.getElementById("meta").textContent = `ступень ≤ ${t.stage} · ${t.items.length} заданий`;
+  let part = null, doc = null;
+  t.items.forEach((it, n) => {
+    if (it.part !== part) { part = it.part; form.append(el("h2", {}, PARTS[part])); }
+    if (it.doc && it.doc.id !== doc) { doc = it.doc.id; form.append(el("div", {class: "doc"}, el("i", {}, it.doc.kind), it.doc.text)); }
+    const card = el("div", {class: "card", id: "c-" + it.id});
+    const c = el("div", {class: "consigne"}, `${n + 1}. ${it.consigne.fr}`);
+    if (it.consigne.ru) c.append(el("span", {class: "ru"}, it.consigne.ru));
+    card.append(c);
+    if (it.prompt) card.append(el("div", {class: "prompt"}, it.prompt));
+    if (it.type === "choice") {
+      it.options.forEach(o => card.append(el("label", {class: "opt", "data-i": o.i},
+        el("input", {type: "radio", name: it.id, value: o.i}), o.text)));
+    } else if (it.type === "write") {
+      card.append(el("ul", {class: "points"}, ...it.points.map(p => el("li", {}, p))));
+      const ta = el("textarea", {name: it.id, lang: "fr", spellcheck: "false"});
+      const cnt = el("div", {class: "count"});
+      const upd = () => { const n = words(ta.value); cnt.textContent = `${n} / ${it.min_words} слов`; cnt.classList.toggle("short", n < it.min_words); };
+      ta.addEventListener("input", upd); upd();
+      card.append(ta, cnt);
+    } else {
+      card.append(el("input", {type: "text", name: it.id, lang: "fr", autocomplete: "off", spellcheck: "false",
+        placeholder: it.type === "number" ? "число или время" : ""}));
+    }
+    form.append(card);
+  });
+  send.disabled = false;
+}
+
+function answers() {
+  const out = {};
+  for (const it of test.items) {
+    if (it.type === "choice") {
+      const r = form.querySelector(`input[name="${it.id}"]:checked`);
+      out[it.id] = r ? Number(r.value) : null;
+    } else out[it.id] = form.querySelector(`[name="${it.id}"]`).value;
+  }
+  return out;
+}
+
+function review(res) {
+  const s = document.getElementById("score");
+  s.hidden = false;
+  const waits = res.items.filter(r => r.ok === null && r.kind !== "empty").length;
+  s.innerHTML = "";
+  s.append(el("b", {}, `${res.score} / ${res.of}`), " закрытых заданий верно");
+  if (waits) s.append(el("div", {class: "hint"}, "Письмо ждёт проверки: fr-drill exam pending, затем оценка через fr-drill exam grade."));
+  for (const r of res.items) {
+    const card = document.getElementById("c-" + r.id), it = test.items.find(i => i.id === r.id);
+    card.classList.add(r.ok === null ? "wait" : r.ok ? "ok" : "bad");
+    card.querySelectorAll("input, textarea").forEach(i => i.disabled = true);
+    if (it.type === "choice") card.querySelectorAll("label.opt").forEach(l => {
+      if (l.textContent === r.expected) l.classList.add("right");
+      else if (l.querySelector("input").checked) l.classList.add("wrong");
+    });
+    const box = el("div", {class: "result"});
+    if (r.ok === null) box.append(el("span", {class: "wait"}, r.kind === "empty" ? "письмо не написано" : `${r.words} слов · ${KINDS[r.kind]}`));
+    else if (r.ok) box.append(el("span", {class: "ok"}, "Верно"));
+    else box.append(el("span", {class: "bad"}, KINDS[r.kind] || "неверно"), it.type === "choice" ? "" : ` — ответ: ${r.expected}`);
+    if (r.explain && r.ok !== true) box.append(el("span", {class: "why"}, r.explain));
+    card.append(box);
+  }
+  send.textContent = "Новый тест";
+  send.disabled = false;
+  send.onclick = () => location.reload();
+  hint.textContent = "";
+  window.scrollTo({top: 0, behavior: "smooth"});
+}
+
+send.onclick = async () => {
+  const a = answers(), blank = Object.values(a).filter(v => v === null || v === "").length;
+  if (blank && !confirm(`Без ответа: ${blank}. Сдать всё равно?`)) return;
+  send.disabled = true;
+  hint.textContent = "Проверяю…";
+  try {
+    const r = await fetch("/submit", {method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({test: test.test, answers: a})});
+    if (!r.ok) throw new Error((await r.json()).error);
+    review(await r.json());
+  } catch (e) { hint.innerHTML = ""; hint.append(el("span", {class: "error"}, "Не отправилось: " + e.message)); send.disabled = false; }
+};
+
+fetch("/test").then(r => r.json()).then(render)
+  .catch(e => form.append(el("p", {class: "error"}, "Сервер не отвечает: " + e.message)));
+</script>
+</body>
+</html>

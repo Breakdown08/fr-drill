@@ -1,0 +1,78 @@
+{
+  "title": "Предлоги от глагола",
+  "note": "Управление глаголов: за каким глаголом идёт à, de или ничего. Отбор из справочника https://irgol.ru/grammaticheskij-spravochnik/upravlenie-glagolov-i-glagolnyh-vyr/ по глаголам из verbs-er.json и вкладки неправильных глаголов; jouer de добавлен сверх него. `after` — что идёт за предлогом: qn, qch, + глагол. `prep`: à, de или —. В `sentences` пропуск `gap` стоит на месте связки: форма à или de, а у глаголов без предлога артикль. У `—` только определённый артикль и только там, где des и du были бы неверны: фраза должна иметь один ответ.",
+  "core": ["je", "j", "tu", "il", "elle", "on", "nous", "vous", "ils", "à", "au", "aux", "de", "du", "d", "des", "la", "le", "l", "les", "besoin", "envie", "guitare", "piano", "voisin", "voisine", "stylo", "football", "cartes", "musée", "film", "chien", "tête", "pied", "dos", "chat", "chats", "mer", "maison", "travail", "match", "télé", "radio", "gare", "café", "musique", "clés", "photo", "photos", "adresse", "heure", "enfant", "ami", "amie", "architecte", "professeur", "médecin", "marie", "paul", "paris", "voiture", "vacances", "soleil", "téléphone", "parler", "français"],
+  "verbs": [
+    {"verb": "téléphoner", "after": "qn", "prep": "à", "ru": "звонить кому-то", "rule": "téléphoner à: звонят кому-то. Но appeler — без предлога.", "sentences": [
+      {"fr": "Je téléphone au médecin.", "gap": "au", "ru": "Я звоню врачу."},
+      {"fr": "Elle téléphone à la voisine.", "gap": "à la", "ru": "Она звонит соседке."},
+      {"fr": "Nous téléphonons à l'architecte.", "gap": "à l'", "ru": "Мы звоним архитектору."}]},
+    {"verb": "parler", "after": "qn", "prep": "à", "ru": "говорить с кем-то", "rule": "С кем говорю — parler à: je parle au voisin. О ком говорю — parler de.", "sentences": [
+      {"fr": "Je parle au voisin.", "gap": "au", "ru": "Я говорю с соседом."},
+      {"fr": "Il parle à l'enfant.", "gap": "à l'", "ru": "Он говорит с ребёнком."},
+      {"fr": "Tu parles à Marie ?", "gap": "à", "ru": "Ты говоришь с Мари?"}]},
+    {"verb": "parler", "after": "qch", "prep": "de", "ru": "говорить о чём-то", "rule": "О чём говорю — parler de: je parle du voisin. С кем говорю — parler à.", "sentences": [
+      {"fr": "Je parle du voisin.", "gap": "du", "ru": "Я говорю о соседе."},
+      {"fr": "Nous parlons des vacances.", "gap": "des", "ru": "Мы говорим об отпуске."},
+      {"fr": "Tu parles de Marie ?", "gap": "de", "ru": "Ты говоришь о Мари?"}]},
+    {"verb": "penser", "after": "qch", "prep": "à", "ru": "думать о чём-то", "rule": "penser à: je pense au travail. По-русски «о», как у parler, но предлог другой.", "sentences": [
+      {"fr": "Je pense aux vacances.", "gap": "aux", "ru": "Я думаю об отпуске."},
+      {"fr": "Elle pense au match.", "gap": "au", "ru": "Она думает о матче."},
+      {"fr": "Il pense à la voisine.", "gap": "à la", "ru": "Он думает о соседке."}]},
+    {"verb": "donner qch", "after": "qn", "prep": "à", "ru": "давать что-то кому-то", "rule": "Кому — à: je donne le stylo au voisin.", "sentences": [
+      {"fr": "Je donne le stylo au professeur.", "gap": "au", "ru": "Я даю ручку преподавателю."},
+      {"fr": "Il donne les clés à la voisine.", "gap": "à la", "ru": "Он даёт ключи соседке."}]},
+    {"verb": "montrer qch", "after": "qn", "prep": "à", "ru": "показывать что-то кому-то", "rule": "Кому — à: je montre la photo au voisin.", "sentences": [
+      {"fr": "Elle montre la photo à l'ami.", "gap": "à l'", "ru": "Она показывает фото другу."},
+      {"fr": "Je montre les photos aux voisins.", "gap": "aux", "ru": "Я показываю фотографии соседям."}]},
+    {"verb": "demander qch", "after": "qn", "prep": "à", "ru": "спрашивать, просить что-то у кого-то", "rule": "demander qch à qn: по-русски «у кого», по-французски «кому»: je demande l'heure au voisin.", "sentences": [
+      {"fr": "Je demande l'heure au voisin.", "gap": "au", "ru": "Я спрашиваю время у соседа."},
+      {"fr": "Il demande l'adresse à Marie.", "gap": "à", "ru": "Он спрашивает адрес у Мари."}]},
+    {"verb": "jouer", "after": "игра, спорт", "prep": "à", "ru": "играть во что-то", "rule": "Игры и спорт — jouer à: je joue au football, aux cartes.", "sentences": [
+      {"fr": "Je joue au football.", "gap": "au", "ru": "Я играю в футбол."},
+      {"fr": "Nous jouons aux cartes.", "gap": "aux", "ru": "Мы играем в карты."}]},
+    {"verb": "jouer", "after": "инструмент", "prep": "de", "ru": "играть на чём-то", "rule": "Инструменты — jouer de: je joue de la guitare, du piano.", "sentences": [
+      {"fr": "Je joue de la guitare.", "gap": "de la", "ru": "Я играю на гитаре."},
+      {"fr": "Tu joues du piano ?", "gap": "du", "ru": "Ты играешь на пианино?"}]},
+    {"verb": "avoir mal", "after": "часть тела", "prep": "à", "ru": "болит что-то", "rule": "avoir mal à: j'ai mal à la tête, j'ai mal au pied.", "sentences": [
+      {"fr": "Elle a mal à la tête.", "gap": "à la", "ru": "У неё болит голова."},
+      {"fr": "Il a mal au dos.", "gap": "au", "ru": "У него болит спина."}]},
+    {"verb": "commencer", "after": "+ глагол", "prep": "à", "ru": "начинать что-то делать", "rule": "commencer à + глагол: je commence à chanter.", "sentences": [
+      {"fr": "Je commence à chanter.", "gap": "à", "ru": "Я начинаю петь."},
+      {"fr": "Elle commence à travailler.", "gap": "à", "ru": "Она начинает работать."}]},
+    {"verb": "avoir peur", "after": "qch", "prep": "de", "ru": "бояться чего-то", "rule": "avoir peur de: j'ai peur du chien.", "sentences": [
+      {"fr": "Il a peur du chien.", "gap": "du", "ru": "Он боится собаки."},
+      {"fr": "Elle a peur de la mer.", "gap": "de la", "ru": "Она боится моря."}]},
+    {"verb": "avoir besoin", "after": "qch", "prep": "de", "ru": "нуждаться в чём-то", "rule": "avoir besoin de: j'ai besoin de la voiture.", "sentences": [
+      {"fr": "J'ai besoin de la voiture.", "gap": "de la", "ru": "Мне нужна машина."},
+      {"fr": "Elle a besoin de l'adresse.", "gap": "de l'", "ru": "Ей нужен адрес."},
+      {"fr": "Nous avons besoin du stylo.", "gap": "du", "ru": "Нам нужна ручка."}]},
+    {"verb": "avoir envie", "after": "+ глагол", "prep": "de", "ru": "хотеть что-то сделать", "rule": "avoir envie de + глагол: j'ai envie de chanter.", "sentences": [
+      {"fr": "J'ai envie de danser.", "gap": "de", "ru": "Мне хочется танцевать."},
+      {"fr": "Il a envie de manger.", "gap": "de", "ru": "Ему хочется есть."}]},
+    {"verb": "oublier", "after": "+ глагол", "prep": "de", "ru": "забывать что-то сделать", "rule": "oublier de + глагол: j'oublie de téléphoner. С вещью предлога нет: j'oublie le stylo.", "sentences": [
+      {"fr": "J'oublie de téléphoner.", "gap": "de", "ru": "Я забываю позвонить."},
+      {"fr": "Il oublie de manger.", "gap": "de", "ru": "Он забывает поесть."}]},
+    {"verb": "oublier", "after": "qch", "prep": "—", "ru": "забывать что-то", "rule": "Вещь забывают без предлога: j'oublie le stylo. oublier de — только перед глаголом.", "sentences": [
+      {"fr": "J'oublie le stylo.", "gap": "le", "ru": "Я забываю ручку."},
+      {"fr": "Il oublie l'adresse.", "gap": "l'", "ru": "Он забывает адрес."}]},
+    {"verb": "regarder", "after": "qch", "prep": "—", "ru": "смотреть на что-то", "rule": "regarder без предлога: je regarde la mer, хотя по-русски «на море».", "sentences": [
+      {"fr": "Je regarde la mer.", "gap": "la", "ru": "Я смотрю на море."},
+      {"fr": "Ils regardent le match.", "gap": "le", "ru": "Они смотрят матч."}]},
+    {"verb": "écouter", "after": "qn", "prep": "—", "ru": "слушать кого-то", "rule": "écouter без предлога: j'écoute le professeur.", "sentences": [
+      {"fr": "J'écoute le professeur.", "gap": "le", "ru": "Я слушаю преподавателя."},
+      {"fr": "Vous écoutez la radio ?", "gap": "la", "ru": "Вы слушаете радио?"}]},
+    {"verb": "chercher", "after": "qch", "prep": "—", "ru": "искать что-то", "rule": "chercher без предлога: je cherche la gare.", "sentences": [
+      {"fr": "Je cherche la gare.", "gap": "la", "ru": "Я ищу вокзал."},
+      {"fr": "Elle cherche le stylo.", "gap": "le", "ru": "Она ищет ручку."}]},
+    {"verb": "aider", "after": "qn", "prep": "—", "ru": "помогать кому-то", "rule": "aider без предлога: j'aide le voisin, хотя по-русски «кому».", "sentences": [
+      {"fr": "J'aide le voisin.", "gap": "le", "ru": "Я помогаю соседу."},
+      {"fr": "Tu aides la voisine ?", "gap": "la", "ru": "Ты помогаешь соседке?"}]},
+    {"verb": "inviter", "after": "qn", "prep": "—", "ru": "приглашать кого-то", "rule": "inviter без предлога: j'invite le voisin.", "sentences": [
+      {"fr": "J'invite les voisins.", "gap": "les", "ru": "Я приглашаю соседей."},
+      {"fr": "Nous invitons l'architecte.", "gap": "l'", "ru": "Мы приглашаем архитектора."}]},
+    {"verb": "aimer", "after": "qch", "prep": "—", "ru": "любить что-то", "rule": "aimer без предлога и всегда с артиклем: j'aime le café.", "sentences": [
+      {"fr": "J'aime le café.", "gap": "le", "ru": "Я люблю кофе."},
+      {"fr": "Il aime les chats.", "gap": "les", "ru": "Он любит кошек."}]}
+  ]
+}

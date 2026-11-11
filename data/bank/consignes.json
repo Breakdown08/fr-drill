@@ -1,0 +1,6 @@
+{
+  "choose-form": {"fr": "Choisissez la bonne forme.", "ru": "Выберите верную форму."},
+  "choose-answer": {"fr": "Choisissez la bonne réponse.", "ru": "Выберите верный ответ."},
+  "complete": {"fr": "Complétez avec le mot qui manque.", "ru": "Впишите пропущенное слово."},
+  "read-answer": {"fr": "Lisez le message et répondez.", "ru": "Прочитайте сообщение и ответьте."}
+}

@@ -1,0 +1,634 @@
+{
+  "level": "A1",
+  "source": "Inventaire linguistique des contenus clés des niveaux du CECRL (Eaquals, CIEP, Eurocentres, ACPLS, 2015), приложение E",
+  "stages": {
+    "1": "Первые шаги: быть, иметь, артикли, знакомство",
+    "2": "Настоящее время: глаголы, вопрос, отрицание, быт",
+    "3": "Город и покупки: количество, место, время, модальные, ближайшее будущее",
+    "4": "Прошлое и общение: passé composé, встречи, приглашения, письмо"
+  },
+  "topics": [
+    {
+      "id": "gram.subject-pronouns",
+      "kind": "gram",
+      "title": "Личные местоимения-подлежащие",
+      "stage": 1,
+      "requires": [],
+      "notes": "je, tu, il/elle/on, nous, vous, ils/elles"
+    },
+    {
+      "id": "gram.etre",
+      "kind": "gram",
+      "title": "Глагол être в présent",
+      "stage": 1,
+      "requires": [
+        "gram.subject-pronouns"
+      ]
+    },
+    {
+      "id": "gram.avoir",
+      "kind": "gram",
+      "title": "Глагол avoir в présent",
+      "stage": 1,
+      "requires": [
+        "gram.subject-pronouns"
+      ]
+    },
+    {
+      "id": "gram.gender-number",
+      "kind": "gram",
+      "title": "Род и число существительных",
+      "stage": 1,
+      "requires": []
+    },
+    {
+      "id": "gram.articles",
+      "kind": "gram",
+      "title": "Артикли: определённые и неопределённые",
+      "stage": 1,
+      "requires": [
+        "gram.gender-number"
+      ]
+    },
+    {
+      "id": "gram.c-est-il-y-a",
+      "kind": "gram",
+      "title": "c'est / ce sont, il y a, voici / voilà",
+      "stage": 1,
+      "requires": [
+        "gram.articles",
+        "gram.etre"
+      ]
+    },
+    {
+      "id": "gram.question-intonation",
+      "kind": "gram",
+      "title": "Вопрос интонацией; Qui est-ce ? Qu'est-ce que c'est ?",
+      "stage": 1,
+      "requires": [
+        "gram.etre"
+      ]
+    },
+    {
+      "id": "lex.alphabet",
+      "kind": "lex",
+      "title": "Алфавит, произношение по буквам",
+      "stage": 1,
+      "requires": []
+    },
+    {
+      "id": "lex.numbers-basic",
+      "kind": "lex",
+      "title": "Числа 0–69",
+      "stage": 1,
+      "requires": []
+    },
+    {
+      "id": "lex.countries",
+      "kind": "lex",
+      "title": "Страны и национальности",
+      "stage": 1,
+      "requires": [
+        "gram.gender-number"
+      ]
+    },
+    {
+      "id": "lex.personal-info",
+      "kind": "lex",
+      "title": "Личные данные: имя, возраст, адрес, семейное положение",
+      "stage": 1,
+      "requires": [
+        "lex.numbers-basic"
+      ]
+    },
+    {
+      "id": "act.greet",
+      "kind": "act",
+      "title": "Поздороваться, попрощаться, поблагодарить, извиниться",
+      "stage": 1,
+      "requires": [],
+      "notes": "tu или vous; bonjour / bonsoir"
+    },
+    {
+      "id": "act.introduce",
+      "kind": "act",
+      "title": "Представиться, спросить о собеседнике, представить другого",
+      "stage": 1,
+      "requires": [
+        "gram.etre",
+        "act.greet"
+      ]
+    },
+    {
+      "id": "act.clarify",
+      "kind": "act",
+      "title": "Попросить повторить, продиктовать по буквам, говорить медленнее",
+      "stage": 1,
+      "requires": [
+        "lex.alphabet"
+      ]
+    },
+    {
+      "id": "act.personal-info",
+      "kind": "act",
+      "title": "Спросить и сообщить личные данные",
+      "stage": 1,
+      "requires": [
+        "lex.personal-info",
+        "lex.countries",
+        "gram.avoir"
+      ]
+    },
+    {
+      "id": "gram.present-er",
+      "kind": "gram",
+      "title": "Présent глаголов на -er",
+      "stage": 2,
+      "requires": [
+        "gram.subject-pronouns"
+      ]
+    },
+    {
+      "id": "gram.present-frequent",
+      "kind": "gram",
+      "title": "Présent частых неправильных глаголов",
+      "stage": 2,
+      "requires": [
+        "gram.present-er"
+      ],
+      "notes": "aller, faire, prendre, venir, partir…"
+    },
+    {
+      "id": "gram.reflexive",
+      "kind": "gram",
+      "title": "Возвратные глаголы",
+      "stage": 2,
+      "requires": [
+        "gram.present-er"
+      ]
+    },
+    {
+      "id": "gram.negation",
+      "kind": "gram",
+      "title": "Отрицание: ne… pas, ne… jamais, pas de",
+      "stage": 2,
+      "requires": [
+        "gram.articles",
+        "gram.present-er"
+      ]
+    },
+    {
+      "id": "gram.question-words",
+      "kind": "gram",
+      "title": "Вопрос с est-ce que и вопросительными словами",
+      "stage": 2,
+      "requires": [
+        "gram.question-intonation"
+      ],
+      "notes": "qui, où, quand, quel(le), combien, comment, pourquoi"
+    },
+    {
+      "id": "gram.adjectives",
+      "kind": "gram",
+      "title": "Прилагательные: место и согласование",
+      "stage": 2,
+      "requires": [
+        "gram.gender-number"
+      ]
+    },
+    {
+      "id": "gram.possessives",
+      "kind": "gram",
+      "title": "Притяжательные: mon, ma, mes…",
+      "stage": 2,
+      "requires": [
+        "gram.gender-number"
+      ]
+    },
+    {
+      "id": "gram.demonstratives",
+      "kind": "gram",
+      "title": "Указательные: ce, cet, cette, ces",
+      "stage": 2,
+      "requires": [
+        "gram.gender-number"
+      ]
+    },
+    {
+      "id": "gram.stressed-pronouns",
+      "kind": "gram",
+      "title": "Ударные местоимения: moi, toi, lui…",
+      "stage": 2,
+      "requires": [
+        "gram.subject-pronouns"
+      ]
+    },
+    {
+      "id": "gram.connectors",
+      "kind": "gram",
+      "title": "Связки: et, ou, mais, alors",
+      "stage": 2,
+      "requires": []
+    },
+    {
+      "id": "lex.family",
+      "kind": "lex",
+      "title": "Семья и отношения",
+      "stage": 2,
+      "requires": [
+        "gram.possessives"
+      ]
+    },
+    {
+      "id": "lex.objects",
+      "kind": "lex",
+      "title": "Личные и бытовые предметы",
+      "stage": 2,
+      "requires": [
+        "gram.articles"
+      ]
+    },
+    {
+      "id": "lex.daily-routine",
+      "kind": "lex",
+      "title": "Повседневные дела",
+      "stage": 2,
+      "requires": [
+        "gram.reflexive"
+      ]
+    },
+    {
+      "id": "lex.professions",
+      "kind": "lex",
+      "title": "Работа и профессии",
+      "stage": 2,
+      "requires": [
+        "gram.gender-number"
+      ]
+    },
+    {
+      "id": "lex.leisure",
+      "kind": "lex",
+      "title": "Досуг и спорт",
+      "stage": 2,
+      "requires": [
+        "gram.present-frequent"
+      ]
+    },
+    {
+      "id": "lex.housing",
+      "kind": "lex",
+      "title": "Жильё: комнаты, мебель, оборудование",
+      "stage": 2,
+      "requires": [
+        "gram.c-est-il-y-a"
+      ]
+    },
+    {
+      "id": "act.how-are-you",
+      "kind": "act",
+      "title": "Спросить и рассказать, как дела",
+      "stage": 2,
+      "requires": [
+        "act.greet"
+      ]
+    },
+    {
+      "id": "act.habits",
+      "kind": "act",
+      "title": "Привычки и распорядок дня",
+      "stage": 2,
+      "requires": [
+        "lex.daily-routine",
+        "gram.present-frequent"
+      ]
+    },
+    {
+      "id": "act.likes",
+      "kind": "act",
+      "title": "Что нравится и не нравится",
+      "stage": 2,
+      "requires": [
+        "gram.present-er",
+        "gram.negation"
+      ],
+      "notes": "aimer, adorer, détester + сущ. или inf."
+    },
+    {
+      "id": "act.describe",
+      "kind": "act",
+      "title": "Описать людей, места и вещи",
+      "stage": 2,
+      "requires": [
+        "gram.adjectives",
+        "gram.c-est-il-y-a"
+      ]
+    },
+    {
+      "id": "gram.partitive",
+      "kind": "gram",
+      "title": "Партитивы и количество: du, de la, un litre de",
+      "stage": 3,
+      "requires": [
+        "gram.articles",
+        "gram.negation"
+      ]
+    },
+    {
+      "id": "gram.quantity-intensity",
+      "kind": "gram",
+      "title": "Количество и интенсивность: un peu, beaucoup, très, trop",
+      "stage": 3,
+      "requires": [
+        "gram.partitive"
+      ]
+    },
+    {
+      "id": "gram.prepositions-place",
+      "kind": "gram",
+      "title": "Предлоги места: à, au, de, chez, dans; ici, là",
+      "stage": 3,
+      "requires": [
+        "gram.articles"
+      ]
+    },
+    {
+      "id": "gram.prepositions-time",
+      "kind": "gram",
+      "title": "Предлоги и наречия времени: à 7h, en 2015, dans, depuis, il y a",
+      "stage": 3,
+      "requires": [
+        "lex.time-date"
+      ]
+    },
+    {
+      "id": "gram.modals",
+      "kind": "gram",
+      "title": "Модальные + inf.: devoir, pouvoir, vouloir; il faut; pour + inf.",
+      "stage": 3,
+      "requires": [
+        "gram.present-frequent"
+      ]
+    },
+    {
+      "id": "gram.imperative",
+      "kind": "gram",
+      "title": "Императив (несколько глаголов)",
+      "stage": 3,
+      "requires": [
+        "gram.present-frequent"
+      ]
+    },
+    {
+      "id": "gram.futur-proche",
+      "kind": "gram",
+      "title": "Futur proche: aller + inf.",
+      "stage": 3,
+      "requires": [
+        "gram.present-frequent"
+      ]
+    },
+    {
+      "id": "gram.passe-recent",
+      "kind": "gram",
+      "title": "Passé récent: venir de + inf.",
+      "stage": 3,
+      "requires": [
+        "gram.present-frequent"
+      ]
+    },
+    {
+      "id": "gram.present-progressive",
+      "kind": "gram",
+      "title": "être en train de + inf.",
+      "stage": 3,
+      "requires": [
+        "gram.etre"
+      ]
+    },
+    {
+      "id": "gram.conditional-politeness",
+      "kind": "gram",
+      "title": "Вежливый conditionnel: je voudrais, j'aimerais",
+      "stage": 3,
+      "requires": [
+        "gram.modals"
+      ]
+    },
+    {
+      "id": "lex.numbers-big",
+      "kind": "lex",
+      "title": "Числа от 70 и выше, цены",
+      "stage": 3,
+      "requires": [
+        "lex.numbers-basic"
+      ]
+    },
+    {
+      "id": "lex.time-date",
+      "kind": "lex",
+      "title": "Время, дни, месяцы, сезоны, праздники",
+      "stage": 3,
+      "requires": [
+        "lex.numbers-basic"
+      ]
+    },
+    {
+      "id": "lex.food",
+      "kind": "lex",
+      "title": "Еда и кухня",
+      "stage": 3,
+      "requires": [
+        "gram.partitive"
+      ]
+    },
+    {
+      "id": "lex.clothes",
+      "kind": "lex",
+      "title": "Одежда и аксессуары",
+      "stage": 3,
+      "requires": [
+        "gram.adjectives"
+      ]
+    },
+    {
+      "id": "lex.city",
+      "kind": "lex",
+      "title": "Места в городе: магазины и службы",
+      "stage": 3,
+      "requires": [
+        "gram.prepositions-place"
+      ]
+    },
+    {
+      "id": "lex.transport",
+      "kind": "lex",
+      "title": "Транспорт",
+      "stage": 3,
+      "requires": [
+        "gram.prepositions-place"
+      ]
+    },
+    {
+      "id": "lex.weather",
+      "kind": "lex",
+      "title": "Погода",
+      "stage": 3,
+      "requires": [
+        "lex.time-date"
+      ]
+    },
+    {
+      "id": "lex.measures",
+      "kind": "lex",
+      "title": "Вес, меры, количество",
+      "stage": 3,
+      "requires": [
+        "gram.partitive",
+        "lex.numbers-big"
+      ]
+    },
+    {
+      "id": "act.time-price",
+      "kind": "act",
+      "title": "Спросить и назвать время, расписание, цену, дату",
+      "stage": 3,
+      "requires": [
+        "lex.time-date",
+        "lex.numbers-big",
+        "gram.question-words"
+      ]
+    },
+    {
+      "id": "act.ask-info",
+      "kind": "act",
+      "title": "Запросить сведения",
+      "stage": 3,
+      "requires": [
+        "gram.question-words",
+        "gram.conditional-politeness"
+      ]
+    },
+    {
+      "id": "act.shopping",
+      "kind": "act",
+      "title": "Покупки и услуги",
+      "stage": 3,
+      "requires": [
+        "lex.measures",
+        "act.time-price",
+        "gram.conditional-politeness"
+      ]
+    },
+    {
+      "id": "act.restaurant",
+      "kind": "act",
+      "title": "Заказ и бронь в ресторане",
+      "stage": 3,
+      "requires": [
+        "lex.food",
+        "gram.conditional-politeness"
+      ]
+    },
+    {
+      "id": "act.directions",
+      "kind": "act",
+      "title": "Как пройти; инструкции",
+      "stage": 3,
+      "requires": [
+        "lex.city",
+        "gram.imperative"
+      ]
+    },
+    {
+      "id": "act.transport",
+      "kind": "act",
+      "title": "Пользоваться транспортом",
+      "stage": 3,
+      "requires": [
+        "lex.transport",
+        "act.time-price"
+      ]
+    },
+    {
+      "id": "act.plans",
+      "kind": "act",
+      "title": "Рассказать о планах",
+      "stage": 3,
+      "requires": [
+        "gram.futur-proche",
+        "lex.time-date"
+      ]
+    },
+    {
+      "id": "gram.passe-compose-avoir",
+      "kind": "gram",
+      "title": "Passé composé с avoir",
+      "stage": 4,
+      "requires": [
+        "gram.avoir",
+        "gram.present-er"
+      ]
+    },
+    {
+      "id": "gram.passe-compose-etre",
+      "kind": "gram",
+      "title": "Passé composé с être",
+      "stage": 4,
+      "requires": [
+        "gram.passe-compose-avoir",
+        "gram.etre"
+      ]
+    },
+    {
+      "id": "lex.travel",
+      "kind": "lex",
+      "title": "Отпуск и путешествия",
+      "stage": 4,
+      "requires": [
+        "lex.transport",
+        "lex.countries"
+      ]
+    },
+    {
+      "id": "act.appointment",
+      "kind": "act",
+      "title": "Назначить, подтвердить, перенести, отменить встречу",
+      "stage": 4,
+      "requires": [
+        "act.time-price",
+        "gram.modals"
+      ]
+    },
+    {
+      "id": "act.invite",
+      "kind": "act",
+      "title": "Пригласить, предложить; принять или отказаться",
+      "stage": 4,
+      "requires": [
+        "gram.modals",
+        "act.likes"
+      ]
+    },
+    {
+      "id": "act.congratulate",
+      "kind": "act",
+      "title": "Поздравить, пожелать, сделать комплимент",
+      "stage": 4,
+      "requires": [
+        "gram.adjectives"
+      ]
+    },
+    {
+      "id": "act.letter",
+      "kind": "act",
+      "title": "Дружеское письмо и courriel",
+      "stage": 4,
+      "requires": [
+        "act.invite",
+        "gram.passe-compose-etre"
+      ],
+      "notes": "Формулы начала и конца; DELF PE, часть 2"
+    }
+  ]
+}

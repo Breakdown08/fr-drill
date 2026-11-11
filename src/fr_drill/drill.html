@@ -1,0 +1,1730 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Français A1</title>
+<style>
+  :root {
+    --bg: #f6f4ef; --card: #ffffff; --fg: #1d1d1f; --muted: #6b6b70; --line: #e2dfd8;
+    --ok: #1f7a3a; --ok-bg: #e5f4e9; --bad: #b3261e; --bad-bg: #fbe9e7; --accent: #2b4c9b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #16171a; --card: #202227; --fg: #ececef; --muted: #9a9aa3; --line: #33363d;
+      --ok: #7fd49a; --ok-bg: #1d3325; --bad: #ff8a80; --bad-bg: #3a2222; --accent: #8fb0ff; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+    font: 18px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 640px; margin: 0 auto; padding: 32px 16px; }
+  header { display: flex; justify-content: space-between; align-items: baseline; color: var(--muted); }
+  header b { color: var(--fg); font-size: 20px; }
+  .bar { height: 4px; background: var(--line); border-radius: 2px; margin: 12px 0 28px; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 28px; }
+  .prompt { font-size: 34px; font-weight: 600; letter-spacing: .01em; }
+  .prompt span { color: var(--muted); font-weight: 400; }
+  .ru { color: var(--muted); margin: 2px 0 20px; }
+  input { width: 100%; font: inherit; font-size: 26px; padding: 12px 14px; border-radius: 10px;
+    border: 2px solid var(--line); background: var(--bg); color: var(--fg); outline: none; }
+  input:focus { border-color: var(--accent); }
+  input.ok { border-color: var(--ok); background: var(--ok-bg); }
+  input.bad { border-color: var(--bad); background: var(--bad-bg); }
+  .keys { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0 0; }
+  button { font: inherit; border: 1px solid var(--line); background: var(--card); color: var(--fg);
+    border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.main { background: var(--accent); color: var(--card); border-color: var(--accent); padding: 10px 18px; }
+  .feedback { min-height: 56px; margin-top: 16px; font-size: 20px; }
+  .feedback .ok { color: var(--ok); font-weight: 600; }
+  .feedback .bad { color: var(--bad); font-weight: 600; }
+  .feedback .why { color: var(--muted); font-size: 16px; }
+  .row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; gap: 12px; }
+  .hint { color: var(--muted); font-size: 15px; }
+  table { border-collapse: collapse; margin-top: 16px; width: 100%; }
+  td { padding: 4px 8px; border-bottom: 1px solid var(--line); }
+  td:nth-child(2) { font-weight: 600; }
+  td:last-child { color: var(--muted); font-size: 15px; }
+  .rules { margin-top: 18px; display: none; }
+  .rules.open { display: block; }
+  .rules p { color: var(--muted); font-size: 15px; margin: 10px 0 0; }
+  .done h2 { margin: 0 0 4px; font-size: 30px; }
+  .done ul { padding-left: 20px; }
+  .done li { margin: 6px 0; }
+  .done .exp { color: var(--ok); font-weight: 600; }
+  .done .ans { color: var(--bad); text-decoration: line-through; }
+  .hidden { display: none; }
+  nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+  #x-rules td[data-v] { color: var(--fg); font-size: inherit; font-weight: 600; }
+  nav button { padding: 8px 16px; }
+  header select { font: inherit; font-size: 16px; border: 1px solid var(--line); background: var(--card);
+    color: var(--fg); border-radius: 8px; padding: 4px 8px; margin-left: 10px; }
+  #x-rules .off { display: none; }
+  nav button.on { background: var(--accent); color: var(--card); border-color: var(--accent); }
+  .topic { color: var(--muted); font-size: 15px; display: flex; gap: 8px; align-items: center; }
+  .badge { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 6px; padding: 0 6px; }
+  .ask { color: var(--muted); margin: 2px 0 18px; }
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 480px) { .options { grid-template-columns: 1fr; } }
+  .s-ru { font-size: 24px; line-height: 1.3; margin-bottom: 16px; }
+  .tray { min-height: 54px; padding: 8px; border: 1px dashed var(--line); border-radius: 8px; }
+  .tray, .pool { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .pool { margin: 14px 0 4px; min-height: 42px; }
+  .tray.ok { border: 1px solid var(--ok); background: var(--ok-bg); }
+  .tray.bad { border: 1px solid var(--bad); background: var(--bad-bg); }
+  .tile { padding: 8px 12px; font-size: 18px; }
+  .rule { margin-top: 8px; padding-left: 10px; border-left: 3px solid var(--accent); font-size: 16px; }
+  .links { margin-top: 12px; }
+  .links .keys { margin-top: 4px; }
+  .links .tile { padding: 4px 10px; font-size: 16px; }
+  .tile:disabled { cursor: default; }
+  #sent header, #ade header { flex-wrap: wrap; gap: 6px; }
+  #s-count, #q-count { white-space: nowrap; }
+  .modes { display: inline-flex; gap: 6px; margin: 0 auto 0 12px; }
+  .modes button { padding: 2px 10px; font-size: 15px; }
+  .modes button.on { background: var(--accent); color: var(--card); border-color: var(--accent); }
+  .gapline { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 22px; min-height: 54px; padding: 8px;
+    border: 1px dashed var(--line); border-radius: 8px; }
+  .gapline.ok { border: 1px solid var(--ok); background: var(--ok-bg); }
+  .gapline.bad { border: 1px solid var(--bad); background: var(--bad-bg); }
+  .slot { min-width: 54px; min-height: 36px; padding: 2px 10px; font-size: 20px; }
+  .slot:disabled { cursor: default; }
+  .options button { text-align: left; padding: 14px 16px; font-size: 19px; display: flex; gap: 10px; }
+  .options button i { font-style: normal; color: var(--muted); font-size: 14px; padding-top: 3px; }
+  .options button.ok { border-color: var(--ok); background: var(--ok-bg); }
+  .options button.bad { border-color: var(--bad); background: var(--bad-bg); }
+  .options button:disabled { cursor: default; }
+  .say { font-size: 26px; padding: 14px 22px; margin-bottom: 18px; }
+  .digits { letter-spacing: .04em; }
+</style>
+</head>
+<body>
+<main>
+  <nav><button id="tab-conj">Спряжение</button><button id="tab-words">Слова</button><button id="tab-nums">Числа</button><button id="tab-neg">Отрицание</button><button id="tab-aux">Неправильные</button><button id="tab-sent">Предложения</button><button id="tab-ade">à / de</button><button id="tab-pro">Местоимения</button><button id="tab-gen">Род</button><button id="tab-art">Артикли</button></nav>
+
+  <div id="conj">
+  <header><b>Présent · глаголы на -er</b><span id="count"></span></header>
+  <div class="bar"><i id="progress"></i></div>
+
+  <section class="card" id="drill">
+    <div class="prompt" id="prompt">…</div>
+    <div class="ru" id="ru"></div>
+    <input id="answer" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="je parle">
+    <div class="keys" id="keys"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="row">
+      <span class="hint" id="hint">Enter — проверить</span>
+      <button id="toggle">Таблица окончаний</button>
+    </div>
+    <div class="rules" id="rules">
+      <table>
+        <tr><td>je</td><td>-e</td><td>parle · j'aime, j'habite</td><td>не слышно</td></tr>
+        <tr><td>tu</td><td>-es</td><td>parles</td><td>не слышно</td></tr>
+        <tr><td>il / elle / on</td><td>-e</td><td>parle</td><td>не слышно</td></tr>
+        <tr><td>nous</td><td>-ons</td><td>parlons · mangeons, commençons</td><td>[ɔ̃]</td></tr>
+        <tr><td>vous</td><td>-ez</td><td>parlez</td><td>[e]</td></tr>
+        <tr><td>ils / elles</td><td>-ent</td><td>parlent</td><td>не слышно</td></tr>
+      </table>
+      <p>Основа — инфинитив без -er: parl-er → parl-. Звучат одинаково четыре формы: parle, parles, parle, parlent; на слух отличаются только nous и vous.</p>
+      <p>Перед гласной и немой h je → j': j'aime, j'écoute, j'habite.</p>
+    </div>
+  </section>
+
+  <section class="card done hidden" id="done">
+    <h2 id="score"></h2>
+    <div class="hint" id="total"></div>
+    <ul id="mistakes"></ul>
+    <div class="row"><span class="hint">Enter — ещё подход</span><button class="main" id="again">Ещё 20</button></div>
+  </section>
+  </div>
+
+  <div id="words" class="hidden">
+  <header><b>Слова A1</b><span id="w-count"></span></header>
+  <div class="bar"><i id="w-progress"></i></div>
+
+  <section class="card" id="w-card">
+    <div class="topic"><span id="w-topic"></span><span class="badge hidden" id="w-new">новое</span></div>
+    <div class="prompt" id="w-prompt">…</div>
+    <div class="ask" id="w-ask"></div>
+    <div class="options" id="w-options"></div>
+    <div class="row"><span class="hint" id="w-hint">1–4 или клик</span><button class="main hidden" id="w-next">Дальше</button></div>
+  </section>
+
+  <section class="card done hidden" id="w-done">
+    <h2 id="w-score"></h2>
+    <div class="hint" id="w-total"></div>
+    <ul id="w-mistakes"></ul>
+    <div class="row"><span class="hint">Enter — ещё подход</span><button class="main" id="w-again">Ещё 10</button></div>
+  </section>
+  </div>
+
+  <div id="nums" class="hidden">
+  <header><b id="n-title">Числа</b><span id="n-count"></span></header>
+  <div class="bar"><i id="n-progress"></i></div>
+
+  <section class="card" id="n-card">
+    <div class="topic"><span id="n-topic"></span><span class="hint" id="n-voice"></span></div>
+    <button class="say hidden" id="n-say">▶ слушать</button>
+    <div class="prompt" id="n-prompt">…</div>
+    <div class="ask" id="n-ask"></div>
+    <input id="n-answer" class="digits" inputmode="numeric" autocomplete="off" placeholder="цифрами">
+    <div class="options hidden" id="n-options"></div>
+    <div class="feedback" id="n-feedback"></div>
+    <div class="row">
+      <span class="hint" id="n-hint"></span>
+      <button id="n-toggle">Как устроены</button>
+    </div>
+    <div class="rules" id="n-rules">
+      <table>
+        <tr><td>17–19</td><td>dix-sept</td><td>10 + 7</td></tr>
+        <tr><td>21, 31…61</td><td>vingt et un</td><td>с «et»; дальше дефис: vingt-deux</td></tr>
+        <tr><td>70–79</td><td>soixante-dix</td><td>60 + 10; 71 — soixante et onze, 77 — soixante-dix-sept</td></tr>
+        <tr><td>80</td><td>quatre-vingts</td><td>4 × 20; 81 — quatre-vingt-un, без «et» и без -s</td></tr>
+        <tr><td>90–99</td><td>quatre-vingt-dix</td><td>4 × 20 + 10; 97 — quatre-vingt-dix-sept</td></tr>
+        <tr><td>200</td><td>deux cents</td><td>-s только в конце: deux cent un</td></tr>
+        <tr><td>2000</td><td>deux mille</td><td>mille не меняется никогда</td></tr>
+      </table>
+      <p>Слышишь «quatre-vingt-dix-sept» — это одно число: 4 × 20 + 17 = 97, а не 4-20-17.</p>
+    </div>
+  </section>
+
+  <section class="card done hidden" id="n-done">
+    <h2 id="n-score"></h2>
+    <div class="hint" id="n-total"></div>
+    <ul id="n-mistakes"></ul>
+    <table id="n-cats"></table>
+    <div class="row"><span class="hint">Enter — ещё подход</span><button class="main" id="n-again">Ещё 20</button></div>
+  </section>
+  </div>
+  <div id="neg" class="hidden">
+  <header><b>Отрицание · ne … pas</b><span id="g-count"></span></header>
+  <div class="bar"><i id="g-progress"></i></div>
+
+  <section class="card" id="g-card">
+    <div class="prompt" id="g-prompt">…</div>
+    <div class="ru" id="g-ru"></div>
+    <input id="g-answer" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div class="keys" id="g-keys"></div>
+    <div class="feedback" id="g-feedback"></div>
+    <div class="row">
+      <span class="hint" id="g-hint">Enter — проверить</span>
+      <button id="g-toggle">Правило</button>
+    </div>
+    <div class="rules" id="g-rules">
+      <table>
+        <tr><td>ne + глагол + pas</td><td>il ne parle pas</td><td>глагол между ne и pas</td></tr>
+        <tr><td>n' перед гласной и h</td><td>il n'aime pas</td><td>tu n'habites pas</td></tr>
+        <tr><td>je + n'</td><td>je n'aime pas</td><td>j' исчезает: перед n' стоит je</td></tr>
+        <tr><td>nous / -ger, -cer</td><td>nous ne mangeons pas</td><td>спряжение то же, что без отрицания</td></tr>
+      </table>
+      <p>Остаток фразы дан — его можно не писать: хватит «ils ne regardent pas». Если пишешь — без опечаток.</p>
+      <p>В разговоре ne часто глотают (j'aime pas), на письме — обязательно.</p>
+    </div>
+  </section>
+
+  <section class="card done hidden" id="g-done">
+    <h2 id="g-score"></h2>
+    <div class="hint" id="g-total"></div>
+    <ul id="g-mistakes"></ul>
+    <div class="row"><span class="hint">Enter — ещё подход</span><button class="main" id="g-again">Ещё 15</button></div>
+  </section>
+  </div>
+  <div id="aux" class="hidden">
+  <header><span><b>Неправильные глаголы</b><select id="x-verb">
+    <option value="">вперемешку</option>
+    <option value="être">être — быть</option>
+    <option value="avoir">avoir — иметь</option>
+    <option value="aller">aller — идти, ехать</option>
+    <option value="faire">faire — делать</option>
+    <option value="prendre">prendre — брать</option>
+    <option value="venir">venir — приходить</option>
+    <option value="choose">по смыслу — глагол скрыт</option>
+  </select></span><span id="x-count"></span></header>
+  <div class="bar"><i id="x-progress"></i></div>
+
+  <section class="card" id="x-card">
+    <div class="prompt" id="x-prompt">…</div>
+    <div class="ru" id="x-ru"></div>
+    <input id="x-answer" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div class="keys" id="x-keys"></div>
+    <div class="feedback" id="x-feedback"></div>
+    <div class="row">
+      <span class="hint" id="x-hint">Enter — проверить</span>
+      <button id="x-toggle">Таблица</button>
+    </div>
+    <div class="rules" id="x-rules">
+      <table>
+        <tr><td></td><td data-v="être">être — быть</td><td data-v="avoir">avoir — иметь</td><td data-v="aller">aller — идти, ехать</td><td data-v="faire">faire — делать</td><td data-v="prendre">prendre — брать</td><td data-v="venir">venir — приходить</td></tr>
+        <tr><td>je</td><td data-v="être">je suis</td><td data-v="avoir">j'ai</td><td data-v="aller">je vais</td><td data-v="faire">je fais</td><td data-v="prendre">je prends</td><td data-v="venir">je viens</td></tr>
+        <tr><td>tu</td><td data-v="être">tu es</td><td data-v="avoir">tu as</td><td data-v="aller">tu vas</td><td data-v="faire">tu fais</td><td data-v="prendre">tu prends</td><td data-v="venir">tu viens</td></tr>
+        <tr><td>il / elle / on</td><td data-v="être">il est</td><td data-v="avoir">il a</td><td data-v="aller">il va</td><td data-v="faire">il fait</td><td data-v="prendre">il prend</td><td data-v="venir">il vient</td></tr>
+        <tr><td>nous</td><td data-v="être">nous sommes</td><td data-v="avoir">nous avons</td><td data-v="aller">nous allons</td><td data-v="faire">nous faisons</td><td data-v="prendre">nous prenons</td><td data-v="venir">nous venons</td></tr>
+        <tr><td>vous</td><td data-v="être">vous êtes</td><td data-v="avoir">vous avez</td><td data-v="aller">vous allez</td><td data-v="faire">vous faites</td><td data-v="prendre">vous prenez</td><td data-v="venir">vous venez</td></tr>
+        <tr><td>ils / elles</td><td data-v="être">ils sont</td><td data-v="avoir">ils ont</td><td data-v="aller">ils vont</td><td data-v="faire">ils font</td><td data-v="prendre">ils prennent</td><td data-v="venir">ils viennent</td></tr>
+      </table>
+      <p>Формы неправильные — только наизусть.</p>
+      <p data-v="avoir">je + ai → j'ai; il a без акцента (à — это предлог «в»).</p>
+      <p data-v="avoir">Возраст, голод, жажда, холод, страх — через avoir: j'ai 28 ans, j'ai faim. «Я есть 28 лет» по-французски не говорят.</p>
+      <p data-v="aller">У aller корень меняется: je vais, nous allons, ils vont. Куда — à Paris, au travail, chez le médecin; «как дела» — тоже aller: ça va, je vais bien.</p>
+      <p data-v="faire">faire — занятия и дела: faire du sport, faire la cuisine. vous faites, ils font — без -ez и -ent.</p>
+      <p data-v="prendre">prendre — транспорт и заказ: prendre le bus, prendre un café. Во множественном n удваивается: ils prennent; nous prenons — одна.</p>
+      <p data-v="venir">venir — сюда, к говорящему; aller — туда. je viens, nous venons, ils viennent.</p>
+      <p>Остаток фразы дан — его можно не писать: хватит «tu es». Если пишешь — без опечаток.</p>
+      <p>«По смыслу»: глагол скрыт, выбирай его по русскому значению. Русское «быть» и «ехать» часто обманывают: j'ai faim, je prends le bus.</p>
+    </div>
+  </section>
+
+  <section class="card done hidden" id="x-done">
+    <h2 id="x-score"></h2>
+    <div class="hint" id="x-total"></div>
+    <ul id="x-mistakes"></ul>
+    <div class="row"><span class="hint">Enter — ещё подход</span><button class="main" id="x-again">Ещё 18</button></div>
+  </section>
+  </div>
+  <div id="sent" class="hidden">
+  <header><b>Предложения</b><span class="modes"><button id="mode-build">Сборка</button><button id="mode-gaps">Связки</button></span><span id="s-count"></span><span id="q-count"></span></header>
+  <div id="s-build">
+  <div class="bar"><i id="s-progress"></i></div>
+
+  <section class="card" id="s-card">
+    <div class="s-ru" id="s-ru">…</div>
+    <div class="tray" id="s-tray"></div>
+    <div class="pool" id="s-pool"></div>
+    <div class="links"><span class="hint">Артикли</span><div class="keys" id="s-articles"></div></div>
+    <div class="links"><span class="hint">Предлоги</span><div class="keys" id="s-prepositions"></div></div>
+    <div class="feedback" id="s-feedback"></div>
+    <div class="row"><span class="hint" id="s-hint"></span></div>
+  </section>
+
+  <section class="card done hidden" id="s-done">
+    <h2 id="s-score"></h2>
+    <div class="hint" id="s-total"></div>
+    <ul id="s-mistakes"></ul>
+    <div class="row"><span class="hint">Enter — ещё подход</span><button class="main" id="s-again">Ещё 10</button></div>
+  </section>
+  </div>
+  <div id="s-gaps" class="hidden">
+  <div class="bar"><i id="q-progress"></i></div>
+
+  <section class="card" id="q-card">
+    <div class="s-ru" id="q-ru">…</div>
+    <div class="gapline" id="q-line"></div>
+    <div class="links"><span class="hint">Артикли</span><div class="keys" id="q-articles"></div></div>
+    <div class="links"><span class="hint">Предлоги</span><div class="keys" id="q-prepositions"></div></div>
+    <div class="feedback" id="q-feedback"></div>
+    <div class="row"><span class="hint" id="q-hint"></span></div>
+  </section>
+
+  <section class="card done hidden" id="q-done">
+    <h2 id="q-score"></h2>
+    <div class="hint" id="q-total"></div>
+    <ul id="q-mistakes"></ul>
+    <div class="row"><span class="hint">Enter — ещё подход</span><button class="main" id="q-again">Ещё 20</button></div>
+  </section>
+  </div>
+  </div>
+  <div id="ade" class="hidden">
+  <header><b>Предлоги à и de</b><span class="modes"><button id="a-phrases">Фразы</button><button id="a-verbs">Глаголы</button></span><span id="a-count"></span></header>
+  <div class="bar"><i id="a-progress"></i></div>
+
+  <section class="card" id="a-card">
+    <div class="s-ru" id="a-ru">…</div>
+    <div class="gapline" id="a-line"></div>
+    <div class="links"><span class="hint">à: куда, где, кому, когда</span><div class="keys" id="a-to"></div></div>
+    <div class="links"><span class="hint">de: откуда, чьё, о чём, сколько</span><div class="keys" id="a-from"></div></div>
+    <div class="links hidden" id="a-bare"><span class="hint">без предлога</span><div class="keys" id="a-art"></div></div>
+    <div class="feedback" id="a-feedback"></div>
+    <div class="row">
+      <span class="hint" id="a-hint"></span>
+      <button id="a-toggle">Правило</button>
+    </div>
+    <div class="rules" id="a-rules">
+      <table>
+        <tr><td></td><td>à</td><td>de</td></tr>
+        <tr><td>+ le</td><td>au bureau</td><td>du bureau</td></tr>
+        <tr><td>+ la</td><td>à la gare</td><td>de la gare</td></tr>
+        <tr><td>+ гласная</td><td>à l'architecte</td><td>de l'architecte</td></tr>
+        <tr><td>+ les</td><td>aux enfants</td><td>des enfants</td></tr>
+        <tr><td>имя, город</td><td>à Paris, à Marie</td><td>de Paris, de Marie</td></tr>
+      </table>
+      <p>à: где и куда (à Paris), кому (à Marie), во сколько (à midi), думать о (penser à), играть во что-то (jouer à), болит (avoir mal à).</p>
+      <p>de: откуда (de Paris), чьё (la voiture de Marie), говорить о (parler de), после beaucoup, près, loin, бояться (avoir peur de).</p>
+      <p>Глаголы: qn — кто-то, qch — что-то. Предлог держится за глагол, а не за русский падеж: téléphoner à, но aider и regarder без предлога.</p>
+    </div>
+  </section>
+
+  <section class="card done hidden" id="a-done">
+    <h2 id="a-score"></h2>
+    <div class="hint" id="a-total"></div>
+    <ul id="a-mistakes"></ul>
+    <table id="a-uses"></table>
+    <div class="row"><span class="hint">Enter — ещё подход</span><button class="main" id="a-again">Ещё 20</button></div>
+  </section>
+  </div>
+  <div id="pro" class="hidden">
+  <header><b>Местоимения</b><span id="o-count"></span></header>
+  <div class="bar"><i id="o-progress"></i></div>
+
+  <section class="card" id="o-card">
+    <div class="s-ru" id="o-ru">…</div>
+    <div class="gapline" id="o-line"></div>
+    <div class="links"><span class="hint">подлежащее: перед глаголом</span><div class="keys" id="o-subject"></div></div>
+    <div class="links"><span class="hint">ударное: отдельно, после предлога, c'est</span><div class="keys" id="o-stressed"></div></div>
+    <div class="feedback" id="o-feedback"></div>
+    <div class="row">
+      <span class="hint" id="o-hint"></span>
+      <button id="o-toggle">Правило</button>
+    </div>
+    <div class="rules" id="o-rules">
+      <table>
+        <tr><td></td><td>подлежащее</td><td>ударное</td></tr>
+        <tr><td>я</td><td>je, j'</td><td>moi</td></tr>
+        <tr><td>ты</td><td>tu</td><td>toi</td></tr>
+        <tr><td>он / она</td><td>il / elle</td><td>lui / elle</td></tr>
+        <tr><td>мы</td><td>nous, on</td><td>nous</td></tr>
+        <tr><td>вы, Вы</td><td>vous</td><td>vous</td></tr>
+        <tr><td>они</td><td>ils / elles</td><td>eux / elles</td></tr>
+      </table>
+      <p>Подлежащее стоит перед глаголом: je suis, tu parles. Перед гласной и немой h je → j'.</p>
+      <p>Ударное — везде, где нет глагола рядом: после предлога (avec moi, chez toi), после c'est (c'est lui), при выделении (Moi, je…), в коротком ответе (Moi aussi. Et toi ?).</p>
+      <p>ils, eux — мужчины или смешанная группа; elles — только женщины. on в разговоре = «мы».</p>
+    </div>
+  </section>
+
+  <section class="card done hidden" id="o-done">
+    <h2 id="o-score"></h2>
+    <div class="hint" id="o-total"></div>
+    <ul id="o-mistakes"></ul>
+    <table id="o-uses"></table>
+    <div class="row"><span class="hint">Enter — ещё подход</span><button class="main" id="o-again">Ещё 20</button></div>
+  </section>
+  </div>
+  <div id="gen" class="hidden">
+  <header><b>Род</b><span id="r-count"></span></header>
+  <div class="bar"><i id="r-progress"></i></div>
+
+  <section class="card" id="r-card">
+    <div class="s-ru" id="r-ru">…</div>
+    <div class="prompt" id="r-prompt">…</div>
+    <div class="options" id="r-options"></div>
+    <div class="feedback" id="r-feedback"></div>
+    <div class="row">
+      <span class="hint" id="r-hint"></span>
+      <button id="r-toggle">Правило</button>
+    </div>
+    <div class="rules" id="r-rules">
+      <p><b>Мужской род</b> чаще у слов на согласную и на гласную, кроме -e: le train, le vélo, le chat. Окончания: -age, -ment, -eau, -on, -in, -er, -t, -oir, -isme, -a, -o.</p>
+      <p><b>Женский род</b>: -tion, -sion, -té, -ée, -ie, -ure, -ette, -ence, -ance, -ade, -ise, -ille, -ique, -aison, -esse.</p>
+      <p><b>По смыслу</b>: люди — по полу; времена года, стороны света, дни, месяцы и языки — мужского; страны на -e — женского (la France), остальные мужского (le Japon).</p>
+      <p>На немое -e правила нет: le verre, la porte. Такие слова запоминают сразу с артиклем.</p>
+      <p class="hint">По Heminway, Complete French All-in-One, гл. 2–3.</p>
+    </div>
+  </section>
+
+  <section class="card done hidden" id="r-done">
+    <h2 id="r-score"></h2>
+    <div class="hint" id="r-total"></div>
+    <ul id="r-mistakes"></ul>
+    <table id="r-uses"></table>
+    <div class="row"><span class="hint">Enter — ещё подход</span><button class="main" id="r-again">Ещё 20</button></div>
+  </section>
+  </div>
+  <div id="art" class="hidden">
+  <header><b>Артикли</b><select id="t-level"></select><button id="t-new">Новые 20</button><span id="t-count"></span></header>
+  <div class="bar"><i id="t-progress"></i></div>
+
+  <section class="card" id="t-card">
+    <div class="s-ru" id="t-ru">…</div>
+    <div class="gapline" id="t-line"></div>
+    <div id="t-panel"></div>
+    <div class="feedback" id="t-feedback"></div>
+    <div class="row">
+      <span class="hint" id="t-hint"></span>
+      <button id="t-toggle">Правило</button>
+    </div>
+    <div class="rules" id="t-rules">
+      <table>
+        <tr><td></td><td>м.</td><td>ж.</td><td>гласная</td><td>мн.</td></tr>
+        <tr><td>определённый</td><td>le</td><td>la</td><td>l'</td><td>les</td></tr>
+        <tr><td>неопределённый</td><td>un</td><td>une</td><td>un / une</td><td>des</td></tr>
+        <tr><td>частичный</td><td>du</td><td>de la</td><td>de l'</td><td>des</td></tr>
+      </table>
+      <p><b>le, la, les</b> — тот самый: известный обоим, единственный, уточнённый (la voiture de Marie). Впервые — un, дальше о нём же — le: j'ai un chat, le chat mange. И вещь вообще после aimer, adorer, détester: j'aime le café.</p>
+      <p><b>un, une, des</b> — один из многих, исчисляемое, «какой-нибудь»: j'ai un chien, c'est un musée.</p>
+      <p><b>du, de la, de l'</b> — сколько-то несчитаемого: еда, питьё, вещество, погода. Je mange du pain, il y a du vent. Пара-эталон: j'aime <b>le</b> café — je bois <b>du</b> café.</p>
+      <p><b>de, d'</b> — после ne … pas вместо un, une, des, du, de la: je n'ai pas de voiture. После количества: beaucoup de pain. Но le остаётся (je n'aime pas le café), и после ce n'est pas артикль не меняется (ce n'est pas du fromage).</p>
+      <p class="hint">По Heminway, Complete French All-in-One, гл. 1.</p>
+    </div>
+  </section>
+
+  <section class="card done hidden" id="t-done">
+    <h2 id="t-score"></h2>
+    <div class="hint" id="t-total"></div>
+    <div class="hint" id="t-pass"></div>
+    <ul id="t-mistakes"></ul>
+    <table id="t-uses"></table>
+    <div class="row"><span class="hint">Enter — ещё подход</span><button class="main" id="t-again">Ещё 20</button></div>
+  </section>
+  </div>
+</main>
+<script>
+const KIND = {
+  elision: "перед гласной и немой h — j'",
+  spelling: "-ger / -cer: nous mangeons, commençons",
+  accent: "акцент",
+  pronoun: "не то местоимение",
+  ending: "окончание",
+  other: "форма",
+};
+const $ = (id) => document.getElementById(id);
+let session = null, items = [], at = 0, answered = false, started = 0, results = [];
+
+for (const ch of ["é", "è", "ê", "à", "ç", "î", "ô", "'"]) {
+  const b = document.createElement("button");
+  b.textContent = ch;
+  b.tabIndex = -1;
+  b.onclick = () => insert(ch);
+  $("keys").append(b);
+}
+
+function insert(ch) {
+  const el = $("answer");
+  if (answered) return;
+  const [s, e] = [el.selectionStart, el.selectionEnd];
+  el.value = el.value.slice(0, s) + ch + el.value.slice(e);
+  el.focus();
+  el.setSelectionRange(s + 1, s + 1);
+}
+
+$("toggle").onclick = () => { $("rules").classList.toggle("open"); $("answer").focus(); };
+$("again").onclick = start;
+
+async function start() {
+  const r = await fetch("/session");
+  const data = await r.json();
+  session = data.session; items = data.items; at = 0; results = [];
+  $("done").classList.add("hidden");
+  $("drill").classList.remove("hidden");
+  show();
+}
+
+function show() {
+  const it = items[at];
+  answered = false;
+  $("count").textContent = `${at + 1} / ${items.length}`;
+  $("progress").style.width = `${100 * at / items.length}%`;
+  $("prompt").innerHTML = `${it.pronoun} <span>·</span> ${it.verb}`;
+  $("ru").textContent = it.ru;
+  const el = $("answer");
+  el.value = ""; el.className = ""; el.readOnly = false;
+  el.placeholder = it.pronoun === "je" ? "je … / j'…" : `${it.pronoun} …`;
+  $("feedback").innerHTML = "";
+  $("hint").textContent = "Enter — проверить";
+  el.focus();
+  started = performance.now();
+}
+
+async function check() {
+  const el = $("answer");
+  if (!el.value.trim()) return;
+  answered = true;
+  el.readOnly = true;
+  const it = items[at];
+  const r = await fetch("/check", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({session, id: it.id, answer: el.value, ms: Math.round(performance.now() - started)}),
+  });
+  const res = await r.json();
+  results.push({...it, answer: el.value, ...res});
+  el.className = res.ok ? "ok" : "bad";
+  $("feedback").innerHTML = res.ok
+    ? `<span class="ok">Верно</span>`
+    : `<span class="bad">${res.expected}</span> <span class="why">— ${KIND[res.kind] || ""}</span>`;
+  $("hint").textContent = "Enter — дальше";
+}
+
+function next() {
+  at += 1;
+  if (at < items.length) return show();
+  $("progress").style.width = "100%";
+  const ok = results.filter((r) => r.ok).length;
+  $("score").textContent = `${ok} из ${results.length}`;
+  const wrong = results.filter((r) => !r.ok);
+  $("total").textContent = wrong.length ? "Ошибки — их следующий подход повторит чаще:" : "Без ошибок.";
+  $("mistakes").innerHTML = wrong.map((r) =>
+    `<li><span class="exp">${r.expected}</span> — <span class="ans">${escape(r.answer)}</span> <span class="hint">${KIND[r.kind] || ""}</span></li>`).join("");
+  $("drill").classList.add("hidden");
+  $("done").classList.remove("hidden");
+  $("again").focus();
+}
+
+function escape(s) {
+  return s.replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+}
+
+document.addEventListener("keydown", (e) => {
+  if (tab === "words") return words_key(e);
+  if (tab === "nums") return nums_key(e);
+  if (tab === "neg") return neg_key(e);
+  if (tab === "aux") return aux_key(e);
+  if (tab === "sent") return sent_key(e);
+  if (tab === "ade") return ade_key(e);
+  if (tab === "pro") return pro_key(e);
+  if (tab === "gen") return gen_key(e);
+  if (tab === "art") return art_key(e);
+  if (e.key !== "Enter") return;
+  e.preventDefault();
+  if (!$("done").classList.contains("hidden")) return start();
+  if (!answered) check();
+  else if (results.length > at) next();  // ответ проверки ещё не пришёл — ждём
+});
+
+// ── Слова ──────────────────────────────────────────────────────────────
+let tab = "conj";
+const p = {session: null, items: [], at: 0, pool: [], tray: [], articles: [], prepositions: [], results: [], answered: false, started: 0, open: 0, total: 0};
+const w = {session: null, queue: [], at: 0, again: new Set(), answered: false, started: 0, results: [], info: {}};
+
+function open_tab(name) {
+  tab = name;
+  for (const id of ["conj", "words", "nums", "neg", "aux", "sent", "ade", "pro", "gen", "art"]) {
+    $(id).classList.toggle("hidden", name !== id);
+    $(`tab-${id}`).classList.toggle("on", name === id);
+  }
+  try { localStorage.setItem("tab", name); } catch (e) {}
+  if (name === "words" && !w.session) words_start();
+  if (name === "nums" && !n.session) nums_start();
+  if (name === "nums" && !n.answered) $("n-answer").focus();
+  if (name === "neg" && !g.session) neg_start();
+  if (name === "neg" && !g.answered) $("g-answer").focus();
+  if (name === "aux" && !x.session) aux_start();
+  if (name === "aux" && !x.answered) $("x-answer").focus();
+  if (name === "sent") sent_mode(mode);
+  if (name === "ade" && !a.session) ade_mode(a.mode);
+  if (name === "pro" && !o.session) pro_start();
+  if (name === "gen" && !r.session) gen_start();
+  if (name === "art" && !t.session) art_level(t.level);
+  if (name === "conj" && !session) start();
+  if (name === "conj" && !answered) $("answer").focus();
+}
+$("tab-conj").onclick = () => open_tab("conj");
+$("tab-words").onclick = () => open_tab("words");
+$("tab-nums").onclick = () => open_tab("nums");
+$("tab-neg").onclick = () => open_tab("neg");
+$("tab-aux").onclick = () => open_tab("aux");
+$("tab-sent").onclick = () => open_tab("sent");
+$("tab-ade").onclick = () => open_tab("ade");
+$("tab-pro").onclick = () => open_tab("pro");
+$("w-again").onclick = words_start;
+$("w-next").onclick = words_next;
+
+async function words_start() {
+  const data = await (await fetch("/vocab/session")).json();
+  Object.assign(w, {session: data.session, queue: [...data.items], at: 0, again: new Set(), results: [], info: data});
+  $("w-done").classList.add("hidden");
+  $("w-card").classList.remove("hidden");
+  words_show();
+}
+
+function words_show() {
+  const it = w.queue[w.at];
+  w.answered = false;
+  $("w-count").textContent = `${w.at + 1} / ${w.queue.length}`;
+  $("w-progress").style.width = `${100 * w.at / w.queue.length}%`;
+  $("w-topic").textContent = it.topic;
+  $("w-new").classList.toggle("hidden", !it.new);
+  $("w-prompt").textContent = it.prompt;
+  $("w-ask").textContent = {"fr-ru": "перевод на русский", "ru-fr": "по-французски"}[it.dir] || `какой артикль · ${it.note}`;
+  $("w-options").innerHTML = "";
+  it.options.forEach((o, i) => {
+    const b = document.createElement("button");
+    b.innerHTML = `<i>${i + 1}</i><span></span>`;
+    b.lastChild.textContent = o;
+    b.onclick = () => words_choose(i);
+    $("w-options").append(b);
+  });
+  $("w-next").classList.add("hidden");
+  $("w-hint").textContent = `1–${it.options.length} или клик`;
+  w.started = performance.now();
+}
+
+async function words_choose(choice) {
+  if (w.answered || w.at >= w.queue.length) return;
+  w.answered = true;
+  const it = w.queue[w.at];
+  const buttons = [...$("w-options").children];
+  buttons.forEach((b) => b.disabled = true);
+  const res = await (await fetch("/vocab/check", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({session: w.session, id: it.id, choice, ms: Math.round(performance.now() - w.started)}),
+  })).json();
+  w.results.push({...it, ok: res.ok, chosen: it.options[choice], expected: it.options[res.answer]});
+  buttons[res.answer].classList.add("ok");
+  if (it.dir === "article") $("w-prompt").textContent = res.full;  // слово целиком, с верным артиклем
+  if (res.ok) return setTimeout(words_next, it.dir === "article" ? 1000 : 600);
+  buttons[choice].classList.add("bad");
+  if (!w.again.has(it.id)) {  // ошибка — вопрос вернётся в конце подхода
+    w.again.add(it.id);
+    w.queue.push(it);
+  }
+  $("w-next").classList.remove("hidden");
+  $("w-hint").textContent = "Enter — дальше";
+}
+
+async function words_next() {
+  if (!w.answered || w.at >= w.queue.length) return;  // итог уже показан или грузится
+  w.at += 1;
+  if (w.at < w.queue.length) return words_show();
+  $("w-progress").style.width = "100%";
+  const first = w.results.slice(0, w.info.items.length);  // повторы после ошибки в счёт не идут
+  const ok = first.filter((r) => r.ok).length;
+  $("w-score").textContent = `${ok} из ${first.length}`;
+  const s = await (await fetch("/vocab/stats")).json();
+  $("w-total").textContent = `Слов: ${w.info.words}, новых ${w.info.new}. Новых сегодня ${s.new_today} из ${s.new_per_day}; ` +
+    `уверенно — ${s.known} из ${s.cards}.` + (first.some((r) => !r.ok) ? " Ошибки следующий подход даст чаще:" : "");
+  const wrong = [...new Map(first.filter((r) => !r.ok).map((r) => [r.prompt, r])).values()];
+  $("w-mistakes").innerHTML = wrong.map((r) =>
+    `<li>${escape(r.prompt)} — <span class="exp">${escape(r.expected)}</span> <span class="ans">${escape(r.chosen)}</span></li>`).join("");
+  $("w-card").classList.add("hidden");
+  $("w-done").classList.remove("hidden");
+}
+
+function words_key(e) {
+  if (!$("w-done").classList.contains("hidden")) {
+    if (e.key === "Enter") { e.preventDefault(); words_start(); }
+    return;
+  }
+  if (!w.answered && /^[1-4]$/.test(e.key) && Number(e.key) <= w.queue[w.at].options.length) return words_choose(Number(e.key) - 1);
+  if (w.answered && e.key === "Enter" && !$("w-next").classList.contains("hidden")) { e.preventDefault(); words_next(); }
+}
+
+// ── Числа ──────────────────────────────────────────────────────────────
+const NKIND = {
+  tens: "не тот десяток",
+  units: "не та единица",
+  hundreds: "не та сотня",
+  pieces: "это одно число, а не части подряд",
+  other: "",
+};
+const MODE = {read: "прочитай — напиши цифрами", listen: "на слух — напиши цифрами", pick: "выбери запись"};
+const n = {session: null, queue: [], at: 0, again: new Set(), answered: false, started: 0, results: [], info: {}, voice: null};
+$("n-again").onclick = nums_start;
+$("n-say").onclick = () => { say(n.queue[n.at].prompt); $("n-answer").focus(); };
+$("n-toggle").onclick = () => { $("n-rules").classList.toggle("open"); $("n-answer").focus(); };
+
+function find_voice() {  // голоса в Chrome приходят не сразу — ждём voiceschanged, но не дольше 1,5 с
+  const pick = () => {
+    const all = (window.speechSynthesis && speechSynthesis.getVoices()) || [];
+    const fr = all.filter((v) => v.lang.toLowerCase().startsWith("fr"));
+    return fr.find((v) => v.lang === "fr-FR") || fr[0] || null;
+  };
+  return new Promise((done) => {
+    if (!window.speechSynthesis) return done(null);
+    const v = pick();
+    if (v) return done(v);
+    const t = setTimeout(() => done(pick()), 1500);
+    speechSynthesis.addEventListener("voiceschanged", () => { const v = pick(); if (v) { clearTimeout(t); done(v); } });
+  });
+}
+
+function say(text) {
+  if (!n.voice) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.voice = n.voice; u.lang = n.voice.lang; u.rate = 0.9;
+  speechSynthesis.speak(u);
+}
+
+async function nums_start() {
+  if (n.voice === null) n.voice = (await find_voice()) || false;
+  $("n-voice").textContent = n.voice ? `голос: ${n.voice.name}` : "французского голоса нет — без аудирования";
+  // Текст виден всегда, голос — по кнопке, как подсказка: заданий «на слух» сервер не выдаёт.
+  const data = await (await fetch("/numbers/session?voice=0")).json();
+  Object.assign(n, {session: data.session, queue: [...data.items], at: 0, again: new Set(), results: [], info: data});
+  $("n-title").textContent = `Числа · ${data.range}`;
+  $("n-done").classList.add("hidden");
+  $("n-card").classList.remove("hidden");
+  nums_show();
+}
+
+function nums_show() {
+  const it = n.queue[n.at];
+  n.answered = false;
+  $("n-count").textContent = `${n.at + 1} / ${n.queue.length}`;
+  $("n-progress").style.width = `${100 * n.at / n.queue.length}%`;
+  $("n-topic").textContent = it.cat;
+  $("n-ask").textContent = MODE[it.mode];
+  $("n-prompt").textContent = it.prompt;
+  $("n-say").classList.toggle("hidden", !n.voice || it.mode !== "read");
+  $("n-feedback").innerHTML = "";
+  const el = $("n-answer"), pick = it.mode === "pick";
+  el.classList.toggle("hidden", pick);
+  $("n-options").classList.toggle("hidden", !pick);
+  $("n-options").innerHTML = "";
+  if (pick) {
+    it.options.forEach((o, i) => {
+      const b = document.createElement("button");
+      b.innerHTML = `<i>${i + 1}</i><span></span>`;
+      b.lastChild.textContent = o;
+      b.onclick = () => nums_check(i);
+      $("n-options").append(b);
+    });
+    $("n-hint").textContent = "1–4 или клик";
+  } else {
+    el.value = ""; el.className = "digits"; el.readOnly = false;
+    $("n-hint").textContent = n.voice ? "пробел — слушать, Enter — проверить" : "Enter — проверить";
+    el.focus();
+  }
+  n.started = performance.now();
+}
+
+async function nums_check(choice) {
+  if (n.answered || n.at >= n.queue.length) return;
+  const it = n.queue[n.at], el = $("n-answer"), pick = it.mode === "pick";
+  if (!pick && !el.value.trim()) return;
+  n.answered = true;
+  const answer = pick ? choice : el.value;
+  if (!pick) el.readOnly = true;
+  const buttons = [...$("n-options").children];
+  buttons.forEach((b) => b.disabled = true);
+  const res = await (await fetch("/numbers/check", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({session: n.session, id: it.id, answer, again: n.again.has(it.id),
+                          ms: Math.round(performance.now() - n.started)}),
+  })).json();
+  const shown = pick ? it.options[choice] : el.value.trim();
+  n.results.push({...it, ...res, shown});
+  if (pick) {
+    buttons[res.answer].classList.add("ok");
+    if (!res.ok) buttons[choice].classList.add("bad");
+  } else el.className = "digits " + (res.ok ? "ok" : "bad");
+  $("n-feedback").innerHTML = (res.ok ? `<span class="ok">Верно</span>` : `<span class="bad">${res.expected}</span>`) +
+    ` <span class="why">— ${escape(res.fr)}${!res.ok && NKIND[res.kind] ? ". " + NKIND[res.kind] : ""}` +
+    `${!res.ok && res.expected >= 60 && res.expected % 100 >= 60 ? ". 70 = 60 + 10, 80 = 4 × 20, 90 = 4 × 20 + 10" : ""}</span>`;
+  say(res.fr);
+  if (!res.ok && !n.again.has(it.id)) {  // ошибка — вопрос вернётся в конце подхода
+    n.again.add(it.id);
+    n.queue.push(it);
+  }
+  $("n-hint").textContent = "Enter — дальше";
+}
+
+async function nums_next() {
+  if (!n.answered || n.results.length <= n.at || n.at >= n.queue.length) return;  // ответ ещё не пришёл или итог уже грузится
+  n.at += 1;
+  if (n.at < n.queue.length) return nums_show();
+  $("n-progress").style.width = "100%";
+  const first = n.results.slice(0, n.info.items.length);  // повторы после ошибки в счёт не идут
+  const ok = first.filter((r) => r.ok).length;
+  $("n-score").textContent = `${ok} из ${first.length}`;
+  const s = await (await fetch("/numbers/stats")).json();
+  $("n-total").textContent = `Ступень ${s.stage} из ${s.stages}. Диапазон держится, когда из последних 20 ответов верны 18 ` +
+    `и пришлись они хотя бы на два дня; когда держатся все — откроется следующая ступень.` + (first.some((r) => !r.ok) ? " Ошибки:" : "");
+  $("n-mistakes").innerHTML = first.filter((r) => !r.ok).map((r) =>
+    `<li><span class="exp">${r.expected}</span> ${escape(r.fr)} — <span class="ans">${escape(r.shown)}</span></li>`).join("");
+  $("n-cats").innerHTML = Object.entries(s.cats).filter(([, c]) => c.stage <= s.stage).map(([name, c]) =>
+    `<tr><td>${name}</td><td>${c.last_ok} / ${c.last}</td><td>${c.held ? "держится" : "закрепляем"}</td></tr>`).join("");
+  $("n-card").classList.add("hidden");
+  $("n-done").classList.remove("hidden");
+}
+
+function nums_key(e) {
+  if (!$("n-done").classList.contains("hidden")) {
+    if (e.key === "Enter") { e.preventDefault(); nums_start(); }
+    return;
+  }
+  const it = n.queue[n.at];
+  if (!it) return;
+  if (n.voice && it.mode === "read" && e.key === " " && !n.answered) { e.preventDefault(); return say(it.prompt); }
+  if (it.mode === "pick" && !n.answered && /^[1-4]$/.test(e.key)) return nums_check(Number(e.key) - 1);
+  if (e.key !== "Enter") return;
+  e.preventDefault();
+  if (!n.answered) { if (it.mode !== "pick") nums_check(); }
+  else nums_next();
+}
+
+// ── Отрицание ──────────────────────────────────────────────────────────
+const GKIND = {
+  ...KIND,
+  ne: "нет ne: на письме ne … pas",
+  pas: "нет pas: ne … pas",
+  elision: "перед гласной и h — n', а je остаётся je: je n'aime pas",
+  order: "глагол стоит между ne и pas",
+  tail: "опечатка в остатке фразы — его можно не писать",
+};
+const g = {session: null, items: [], at: 0, answered: false, started: 0, results: []};
+$("g-again").onclick = neg_start;
+$("g-toggle").onclick = () => { $("g-rules").classList.toggle("open"); $("g-answer").focus(); };
+for (const ch of ["é", "è", "ê", "à", "ç", "î", "ô", "'"]) {
+  const b = document.createElement("button");
+  b.textContent = ch;
+  b.tabIndex = -1;
+  b.onclick = () => {
+    const el = $("g-answer");
+    if (g.answered) return;
+    const [s, e] = [el.selectionStart, el.selectionEnd];
+    el.value = el.value.slice(0, s) + ch + el.value.slice(e);
+    el.focus();
+    el.setSelectionRange(s + 1, s + 1);
+  };
+  $("g-keys").append(b);
+}
+
+async function neg_start() {
+  const data = await (await fetch("/negation/session")).json();
+  Object.assign(g, {session: data.session, items: data.items, at: 0, results: []});
+  $("g-done").classList.add("hidden");
+  $("g-card").classList.remove("hidden");
+  neg_show();
+}
+
+function neg_show() {
+  const it = g.items[g.at];
+  g.answered = false;
+  $("g-count").textContent = `${g.at + 1} / ${g.items.length}`;
+  $("g-progress").style.width = `${100 * g.at / g.items.length}%`;
+  $("g-prompt").innerHTML = `${it.pronoun} <span>·</span> ${escape(it.verb)} <span>${escape(it.rest)}</span>`;
+  $("g-ru").textContent = it.ru;
+  const el = $("g-answer");
+  el.value = ""; el.className = ""; el.readOnly = false;
+  el.placeholder = `${it.pronoun} ne … pas ${it.rest}`;
+  $("g-feedback").innerHTML = "";
+  $("g-hint").textContent = "Enter — проверить";
+  el.focus();
+  g.started = performance.now();
+}
+
+async function neg_check() {
+  const el = $("g-answer");
+  if (!el.value.trim()) return;
+  g.answered = true;
+  el.readOnly = true;
+  const it = g.items[g.at];
+  const res = await (await fetch("/negation/check", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({session: g.session, id: it.id, answer: el.value, ms: Math.round(performance.now() - g.started)}),
+  })).json();
+  g.results.push({...it, answer: el.value, ...res});
+  el.className = res.ok ? "ok" : "bad";
+  $("g-feedback").innerHTML = res.ok
+    ? `<span class="ok">Верно</span> <span class="why">— ${escape(res.expected)}</span>`
+    : `<span class="bad">${escape(res.expected)}</span> <span class="why">— ${GKIND[res.kind] || ""}</span>`;
+  $("g-hint").textContent = "Enter — дальше";
+}
+
+function neg_next() {
+  g.at += 1;
+  if (g.at < g.items.length) return neg_show();
+  $("g-progress").style.width = "100%";
+  const ok = g.results.filter((r) => r.ok).length;
+  $("g-score").textContent = `${ok} из ${g.results.length}`;
+  const wrong = g.results.filter((r) => !r.ok);
+  $("g-total").textContent = wrong.length ? "Ошибки — их следующий подход повторит чаще:" : "Без ошибок.";
+  $("g-mistakes").innerHTML = wrong.map((r) =>
+    `<li><span class="exp">${escape(r.expected)}</span> — <span class="ans">${escape(r.answer)}</span> <span class="hint">${GKIND[r.kind] || ""}</span></li>`).join("");
+  $("g-card").classList.add("hidden");
+  $("g-done").classList.remove("hidden");
+  $("g-again").focus();
+}
+
+function neg_key(e) {
+  if (e.key !== "Enter") return;
+  e.preventDefault();
+  if (!$("g-done").classList.contains("hidden")) return neg_start();
+  if (!g.answered) neg_check();
+  else if (g.results.length > g.at) neg_next();  // ответ проверки ещё не пришёл — ждём
+}
+
+// ── être · avoir ───────────────────────────────────────────────────────
+const XKIND = {
+  verb: "форма другого глагола",
+  person: "глагол тот, форма другого лица",
+  elision: "je + ai → j'ai",
+  accent: "акцент",
+  pronoun: "не то местоимение",
+  other: "форма",
+  tail: "опечатка в остатке фразы — его можно не писать",
+};
+const x = {session: null, items: [], at: 0, answered: false, started: 0, results: []};
+$("x-again").onclick = aux_start;
+try { $("x-verb").value = localStorage.getItem("aux-verb") ?? "être"; } catch (e) {}
+$("x-verb").onchange = () => {
+  try { localStorage.setItem("aux-verb", $("x-verb").value); } catch (e) {}
+  aux_start();
+};
+$("x-toggle").onclick = () => { $("x-rules").classList.toggle("open"); $("x-answer").focus(); };
+for (const ch of ["ê", "é", "à", "'"]) {
+  const b = document.createElement("button");
+  b.textContent = ch;
+  b.tabIndex = -1;
+  b.onclick = () => {
+    const el = $("x-answer");
+    if (x.answered) return;
+    const [s, e] = [el.selectionStart, el.selectionEnd];
+    el.value = el.value.slice(0, s) + ch + el.value.slice(e);
+    el.focus();
+    el.setSelectionRange(s + 1, s + 1);
+  };
+  $("x-keys").append(b);
+}
+
+async function aux_start() {
+  const verb = $("x-verb").value;
+  const one = verb && verb !== "choose";
+  for (const el of $("x-rules").querySelectorAll("[data-v]")) el.classList.toggle("off", one && el.dataset.v !== verb);
+  const query = verb === "choose" ? "?mode=choose" : verb ? `?verb=${encodeURIComponent(verb)}` : "";
+  const data = await (await fetch("/etre-avoir/session" + query)).json();
+  Object.assign(x, {session: data.session, items: data.items, at: 0, results: []});
+  $("x-done").classList.add("hidden");
+  $("x-card").classList.remove("hidden");
+  aux_show();
+}
+
+function aux_show() {
+  const it = x.items[x.at];
+  x.answered = false;
+  $("x-count").textContent = `${x.at + 1} / ${x.items.length}`;
+  $("x-progress").style.width = `${100 * x.at / x.items.length}%`;
+  $("x-prompt").innerHTML = it.verb
+    ? `${it.pronoun} <span>·</span> ${escape(it.verb)} <span>${escape(it.rest)}</span>`
+    : `${it.pronoun} <span>· … ${escape(it.rest)}</span>`;
+  $("x-ru").textContent = it.lit ? `${it.ru} — ${it.lit}` : it.ru;
+  const el = $("x-answer");
+  el.value = ""; el.className = ""; el.readOnly = false;
+  el.placeholder = `${it.pronoun} … ${it.rest}`;
+  $("x-feedback").innerHTML = "";
+  $("x-hint").textContent = "Enter — проверить";
+  el.focus();
+  x.started = performance.now();
+}
+
+async function aux_check() {
+  const el = $("x-answer");
+  if (!el.value.trim()) return;
+  x.answered = true;
+  el.readOnly = true;
+  const it = x.items[x.at];
+  const res = await (await fetch("/etre-avoir/check", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({session: x.session, id: it.id, answer: el.value, ms: Math.round(performance.now() - x.started)}),
+  })).json();
+  x.results.push({...it, answer: el.value, ...res});
+  el.className = res.ok ? "ok" : "bad";
+  $("x-feedback").innerHTML = res.ok
+    ? `<span class="ok">Верно</span> <span class="why">— ${escape(res.expected)}</span>`
+    : `<span class="bad">${escape(res.expected)}</span> <span class="why">— ${XKIND[res.kind] || ""}</span>`;
+  if (res.lit && !it.lit) $("x-feedback").innerHTML += ` <span class="why">(${escape(res.lit)})</span>`;
+  $("x-hint").textContent = "Enter — дальше";
+}
+
+function aux_next() {
+  x.at += 1;
+  if (x.at < x.items.length) return aux_show();
+  $("x-progress").style.width = "100%";
+  const ok = x.results.filter((r) => r.ok).length;
+  $("x-score").textContent = `${ok} из ${x.results.length}`;
+  const wrong = x.results.filter((r) => !r.ok);
+  $("x-total").textContent = wrong.length ? "Ошибки — их следующий подход повторит чаще:" : "Без ошибок.";
+  $("x-mistakes").innerHTML = wrong.map((r) =>
+    `<li><span class="exp">${escape(r.expected)}</span> — <span class="ans">${escape(r.answer)}</span> <span class="hint">${XKIND[r.kind] || ""}</span></li>`).join("");
+  $("x-card").classList.add("hidden");
+  $("x-done").classList.remove("hidden");
+  $("x-again").focus();
+}
+
+function aux_key(e) {
+  if (e.key !== "Enter") return;
+  e.preventDefault();
+  if (!$("x-done").classList.contains("hidden")) return aux_start();
+  if (!x.answered) aux_check();
+  else if (x.results.length > x.at) aux_next();  // ответ проверки ещё не пришёл — ждём
+}
+
+// ── Предложения ────────────────────────────────────────────────────────
+const SKIND = {
+  form: "неверная форма слова",
+  order: "слова верные, порядок другой",
+  word: "лишнее слово",
+  link: "другой артикль или предлог",
+  missing: "использованы не все слова",
+};
+
+async function sent_start() {
+  const data = await (await fetch("/sentences/session")).json();
+  Object.assign(p, {session: data.session, items: data.items, at: 0, results: [], open: data.open, total: data.total,
+                    articles: data.articles, prepositions: data.prepositions});
+  $("s-done").classList.add("hidden");
+  $("s-card").classList.remove("hidden");
+  if (data.items.length) return sent_show();
+  $("s-ru").textContent = "Пока нет открытых предложений: выучи слова на других вкладках.";
+  $("s-hint").textContent = "";
+}
+
+function sent_show() {
+  const it = p.items[p.at];
+  Object.assign(p, {answered: false, pool: it.tiles.map((t, i) => ({t, i})), tray: [], started: performance.now()});
+  $("s-count").textContent = `${p.at + 1} / ${p.items.length}`;
+  $("s-progress").style.width = `${100 * p.at / p.items.length}%`;
+  $("s-ru").textContent = it.ru;
+  $("s-tray").className = "tray";
+  $("s-feedback").innerHTML = "";
+  $("s-hint").textContent = "Клик — слово, Backspace — убрать, Enter — проверить";
+  sent_draw();
+}
+
+function sent_tile(tile, from, to) {
+  const b = document.createElement("button");
+  b.className = "tile";
+  b.textContent = tile.t;
+  b.disabled = p.answered;
+  b.onclick = () => {
+    from.splice(from.indexOf(tile), 1);
+    if (!tile.link || to === p.tray) to.push(tile);
+    sent_draw();
+  };
+  return b;
+}
+
+// Панель одна на все предложения: плитка из неё не убывает и в выборку не возвращается.
+function sent_link(t) {
+  const b = document.createElement("button");
+  b.className = "tile";
+  b.textContent = t;
+  b.disabled = p.answered;
+  b.onclick = () => {
+    p.tray.push({t, link: true});
+    sent_draw();
+  };
+  return b;
+}
+
+function sent_draw() {
+  $("s-tray").replaceChildren(...p.tray.map((t) => sent_tile(t, p.tray, p.pool)));
+  $("s-pool").replaceChildren(...[...p.pool].sort((a, c) => a.i - c.i).map((t) => sent_tile(t, p.pool, p.tray)));
+  $("s-articles").replaceChildren(...p.articles.map(sent_link));
+  $("s-prepositions").replaceChildren(...p.prepositions.map(sent_link));
+}
+
+async function sent_check() {
+  if (!p.tray.length) return;
+  p.answered = true;
+  sent_draw();
+  const it = p.items[p.at];
+  const built = p.tray.map((t) => t.t);
+  const res = await (await fetch("/sentences/check", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({session: p.session, id: it.id, tiles: built, ms: Math.round(performance.now() - p.started)}),
+  })).json();
+  p.results.push({...it, answer: built.join(" "), ...res});
+  $("s-tray").className = `tray ${res.ok ? "ok" : "bad"}`;
+  $("s-feedback").innerHTML = res.ok
+    ? `<span class="ok">Верно</span> <span class="why">— ${escape(res.expected)}</span>`
+    : `<span class="bad">${escape(res.expected)}</span> <span class="why">— ${SKIND[res.kind] || ""}</span>`
+      + res.rules.map((r) => `<div class="rule">${escape(r)}</div>`).join("");
+  $("s-hint").textContent = "Enter — дальше";
+}
+
+function sent_next() {
+  p.at += 1;
+  if (p.at < p.items.length) return sent_show();
+  $("s-progress").style.width = "100%";
+  const ok = p.results.filter((r) => r.ok).length;
+  $("s-score").textContent = `${ok} из ${p.results.length}`;
+  const wrong = p.results.filter((r) => !r.ok);
+  $("s-total").textContent = `Открыто ${p.open} из ${p.total}. ` + (wrong.length ? "Ошибки следующий подход повторит чаще:" : "Без ошибок.");
+  $("s-mistakes").innerHTML = wrong.map((r) =>
+    `<li><span class="exp">${escape(r.expected)}</span> — <span class="ans">${escape(r.answer)}</span> <span class="hint">${SKIND[r.kind] || ""}</span></li>`).join("");
+  $("s-card").classList.add("hidden");
+  $("s-done").classList.remove("hidden");
+  $("s-again").focus();
+}
+
+function sent_key(e) {
+  if (mode === "gaps") return gap_key(e);
+  if (e.key === "Backspace" && !p.answered && p.tray.length) {
+    e.preventDefault();
+    const tile = p.tray.pop();
+    if (!tile.link) p.pool.push(tile);
+    return sent_draw();
+  }
+  if (e.key !== "Enter") return;
+  e.preventDefault();
+  if (!$("s-done").classList.contains("hidden")) return sent_start();
+  if (!p.items.length) return;
+  if (!p.answered) sent_check();
+  else if (p.results.length > p.at) sent_next();  // ответ проверки ещё не пришёл — ждём
+}
+
+$("s-again").onclick = sent_start;
+
+// ── Предложения: связки ────────────────────────────────────────────────
+let mode = "build";
+try { if (localStorage.getItem("sent-mode") === "gaps") mode = "gaps"; } catch (e) {}
+const q = {session: null, items: [], at: 0, fills: [], articles: [], prepositions: [], results: [], answered: false, started: 0, timer: 0};
+
+function sent_mode(name) {
+  mode = name;
+  try { localStorage.setItem("sent-mode", name); } catch (e) {}
+  const gaps = name === "gaps";
+  $("s-build").classList.toggle("hidden", gaps);
+  $("s-gaps").classList.toggle("hidden", !gaps);
+  $("s-count").classList.toggle("hidden", gaps);
+  $("q-count").classList.toggle("hidden", !gaps);
+  $("mode-build").classList.toggle("on", !gaps);
+  $("mode-gaps").classList.toggle("on", gaps);
+  if (gaps && !q.session) gap_start();
+  if (!gaps && !p.session) sent_start();
+}
+
+async function gap_start() {
+  const data = await (await fetch("/sentences/gaps/session")).json();
+  Object.assign(q, {session: data.session, items: data.items, at: 0, results: [], articles: data.articles, prepositions: data.prepositions});
+  $("q-done").classList.add("hidden");
+  $("q-card").classList.remove("hidden");
+  if (data.items.length) return gap_show();
+  $("q-ru").textContent = "Пока нет открытых предложений: выучи слова на других вкладках.";
+  $("q-hint").textContent = "";
+}
+
+function gap_show() {
+  const it = q.items[q.at];
+  Object.assign(q, {answered: false, fills: it.tiles.filter((t) => t === null), started: performance.now()});
+  $("q-count").textContent = `${q.at + 1} / ${q.items.length}`;
+  $("q-progress").style.width = `${100 * q.at / q.items.length}%`;
+  $("q-ru").textContent = it.ru;
+  $("q-line").className = "gapline";
+  $("q-feedback").innerHTML = "";
+  $("q-hint").textContent = "Клик по связке — заполнить, клик по пропуску или Backspace — убрать";
+  gap_draw();
+}
+
+function gap_slot(n) {
+  const b = document.createElement("button");
+  b.className = "slot";
+  b.textContent = q.fills[n] ?? "___";
+  b.disabled = q.answered;
+  b.onclick = () => { q.fills[n] = null; gap_draw(); };
+  return b;
+}
+
+function gap_link(t) {
+  const b = document.createElement("button");
+  b.className = "tile";
+  b.textContent = t;
+  b.disabled = q.answered;
+  b.onclick = () => {
+    q.fills[q.fills.indexOf(null)] = t;
+    gap_draw();
+    if (!q.fills.includes(null)) gap_check();
+  };
+  return b;
+}
+
+function gap_draw() {
+  let n = 0;
+  $("q-line").replaceChildren(...q.items[q.at].tiles.map((t) => {
+    if (t === null) return gap_slot(n++);
+    const word = document.createElement("span");
+    word.textContent = t;
+    return word;
+  }));
+  $("q-articles").replaceChildren(...q.articles.map(gap_link));
+  $("q-prepositions").replaceChildren(...q.prepositions.map(gap_link));
+}
+
+async function gap_check() {
+  q.answered = true;
+  gap_draw();
+  const it = q.items[q.at];
+  const fills = [...q.fills];
+  const res = await (await fetch("/sentences/gaps/check", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({session: q.session, id: it.id, fills, ms: Math.round(performance.now() - q.started)}),
+  })).json();
+  q.results.push({...it, answer: fills.join(" · "), ...res});
+  $("q-line").className = `gapline ${res.ok ? "ok" : "bad"}`;
+  $("q-feedback").innerHTML = res.ok
+    ? `<span class="ok">Верно</span> <span class="why">— ${escape(res.expected)}</span>`
+    : `<span class="bad">${escape(res.expected)}</span>` + res.rules.map((r) => `<div class="rule">${escape(r)}</div>`).join("");
+  $("q-hint").textContent = "Enter — дальше";
+  if (res.ok) q.timer = setTimeout(gap_next, 900);
+}
+
+async function gap_next() {
+  clearTimeout(q.timer);
+  q.at += 1;
+  if (q.at < q.items.length) return gap_show();
+  $("q-progress").style.width = "100%";
+  const wrong = q.results.filter((r) => !r.ok);
+  $("q-score").textContent = `${q.results.length - wrong.length} из ${q.results.length}`;
+  const s = await (await fetch("/sentences/gaps/stats")).json();
+  $("q-total").textContent = (s.pairs.length ? "Чаще всего за всё время: " + s.pairs.map((x) => `${x.got} вместо ${x.want} × ${x.n}`).join(", ") + ". " : "")
+    + (wrong.length ? "Ошибки следующий подход повторит чаще:" : "Без ошибок.");
+  $("q-mistakes").innerHTML = wrong.map((r) =>
+    `<li><span class="exp">${escape(r.expected)}</span> — <span class="ans">${escape(r.answer)}</span></li>`).join("");
+  $("q-card").classList.add("hidden");
+  $("q-done").classList.remove("hidden");
+  $("q-again").focus();
+}
+
+function gap_key(e) {
+  if (e.key === "Backspace" && !q.answered && q.items.length) {
+    e.preventDefault();
+    const last = q.fills.findLastIndex((t) => t !== null);
+    if (last >= 0) q.fills[last] = null;
+    return gap_draw();
+  }
+  if (e.key !== "Enter") return;
+  e.preventDefault();
+  if (!$("q-done").classList.contains("hidden")) return gap_start();
+  if (q.answered && q.results.length > q.at) gap_next();  // ответ проверки ещё не пришёл — ждём
+}
+
+$("q-again").onclick = gap_start;
+$("mode-build").onclick = () => sent_mode("build");
+$("mode-gaps").onclick = () => sent_mode("gaps");
+
+// ── à и de ─────────────────────────────────────────────────────────────
+const a = {mode: "phrases", session: null, items: [], at: 0, to: [], from: [], results: [], answered: false, started: 0, timer: 0, choice: null};
+
+async function ade_start() {
+  const data = await (await fetch(a.mode === "verbs" ? "/prepositions/verbs/session" : "/prepositions/session")).json();
+  Object.assign(a, {session: data.session, items: data.items, at: 0, results: [], to: data.to, from: data.from,
+                    bare: [...(data.articles || []), ...(data.none ? [data.none] : [])]});
+  $("a-again").textContent = `Ещё ${data.items.length}`;
+  $("a-done").classList.add("hidden");
+  $("a-card").classList.remove("hidden");
+  ade_show();
+}
+
+function ade_mode(mode) {
+  clearTimeout(a.timer);
+  a.mode = mode;
+  $("a-phrases").classList.toggle("on", mode === "phrases");
+  $("a-verbs").classList.toggle("on", mode === "verbs");
+  $("a-bare").classList.toggle("hidden", mode !== "verbs");
+  ade_start();
+}
+
+function ade_show() {
+  const it = a.items[a.at];
+  Object.assign(a, {answered: false, choice: null, started: performance.now()});
+  $("a-count").textContent = `${a.at + 1} / ${a.items.length}`;
+  $("a-progress").style.width = `${100 * a.at / a.items.length}%`;
+  $("a-ru").textContent = it.ru;
+  $("a-line").className = "gapline";
+  $("a-feedback").innerHTML = "";
+  $("a-hint").textContent = "Клик — ответ";
+  ade_draw();
+}
+
+function ade_link(t) {
+  const b = document.createElement("button");
+  b.className = "tile";
+  b.textContent = t === "—" ? "ничего" : t;
+  b.disabled = a.answered;
+  b.onclick = () => ade_choose(t);
+  return b;
+}
+
+function ade_draw() {
+  const it = a.items[a.at];
+  const parts = [it.before, a.choice ?? "___", it.after].filter(Boolean).map((t) => {
+    const word = document.createElement("span");
+    word.textContent = t;
+    return word;
+  });
+  $("a-line").replaceChildren(...parts);
+  const has = (t) => !it.choices || it.choices.includes(t);
+  $("a-to").replaceChildren(...a.to.filter(has).map(ade_link));
+  $("a-from").replaceChildren(...a.from.filter(has).map(ade_link));
+  $("a-art").replaceChildren(...a.bare.filter(has).map(ade_link));
+}
+
+async function ade_choose(choice) {
+  if (a.answered) return;
+  Object.assign(a, {answered: true, choice});
+  ade_draw();
+  const it = a.items[a.at];
+  const res = await (await fetch("/prepositions/check", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({session: a.session, id: it.id, choice, ms: Math.round(performance.now() - a.started)}),
+  })).json();
+  a.results.push({...it, choice, ...res});
+  $("a-line").className = `gapline ${res.ok ? "ok" : "bad"}`;
+  $("a-feedback").innerHTML = res.ok
+    ? `<span class="ok">Верно</span> <span class="why">— ${escape(res.expected)}</span>`
+    : `<span class="bad">${escape(res.expected)}</span> <span class="why">— ${escape(res.use)}</span>`
+      + res.rules.map((r) => `<div class="rule">${escape(r)}</div>`).join("");
+  $("a-hint").textContent = "Enter — дальше";
+  if (res.ok) a.timer = setTimeout(ade_next, 900);
+}
+
+function ade_next() {
+  clearTimeout(a.timer);
+  a.at += 1;
+  if (a.at < a.items.length) return ade_show();
+  $("a-progress").style.width = "100%";
+  const wrong = a.results.filter((r) => !r.ok);
+  $("a-score").textContent = `${a.results.length - wrong.length} из ${a.results.length}`;
+  $("a-total").textContent = wrong.length ? "Ошибки следующий подход повторит чаще:" : "Без ошибок.";
+  $("a-mistakes").innerHTML = wrong.map((r) =>
+    `<li><span class="exp">${escape(r.expected)}</span> — <span class="ans">${escape(r.choice)}</span></li>`).join("");
+  const uses = new Map();
+  for (const r of a.results) {
+    const x = uses.get(r.use) || {ok: 0, tries: 0};
+    uses.set(r.use, {ok: x.ok + r.ok, tries: x.tries + 1});
+  }
+  $("a-uses").innerHTML = [...uses].map(([u, x]) => `<tr><td>${escape(u)}</td><td>${x.ok} из ${x.tries}</td></tr>`).join("");
+  $("a-card").classList.add("hidden");
+  $("a-done").classList.remove("hidden");
+  $("a-again").focus();
+}
+
+function ade_key(e) {
+  if (e.key !== "Enter") return;
+  e.preventDefault();
+  if (!$("a-done").classList.contains("hidden")) return ade_start();
+  if (a.answered && a.results.length > a.at) ade_next();  // ответ проверки ещё не пришёл — ждём
+}
+
+$("a-again").onclick = ade_start;
+$("a-phrases").onclick = () => ade_mode("phrases");
+$("a-verbs").onclick = () => ade_mode("verbs");
+$("a-toggle").onclick = () => $("a-rules").classList.toggle("open");
+
+// ── Местоимения ────────────────────────────────────────────────────────
+const o = {session: null, items: [], at: 0, subject: [], stressed: [], results: [], answered: false, started: 0, timer: 0, choice: null};
+
+async function pro_start() {
+  const data = await (await fetch("/pronouns/session")).json();
+  Object.assign(o, {session: data.session, items: data.items, at: 0, results: [], subject: data.subject, stressed: data.stressed});
+  $("o-again").textContent = `Ещё ${data.items.length}`;
+  $("o-done").classList.add("hidden");
+  $("o-card").classList.remove("hidden");
+  pro_show();
+}
+
+function pro_show() {
+  const it = o.items[o.at];
+  Object.assign(o, {answered: false, choice: null, started: performance.now()});
+  $("o-count").textContent = `${o.at + 1} / ${o.items.length}`;
+  $("o-progress").style.width = `${100 * o.at / o.items.length}%`;
+  $("o-ru").textContent = it.ru;
+  $("o-line").className = "gapline";
+  $("o-feedback").innerHTML = "";
+  $("o-hint").textContent = "Клик — ответ";
+  pro_draw();
+}
+
+function pro_link(t) {
+  const b = document.createElement("button");
+  b.className = "tile";
+  b.textContent = t;
+  b.disabled = o.answered;
+  b.onclick = () => pro_choose(t);
+  return b;
+}
+
+function pro_draw() {
+  const it = o.items[o.at];
+  const parts = [it.before, o.choice ?? "___", it.after].filter(Boolean).map((t) => {
+    const word = document.createElement("span");
+    word.textContent = t;
+    return word;
+  });
+  $("o-line").replaceChildren(...parts);
+  $("o-subject").replaceChildren(...o.subject.map(pro_link));
+  $("o-stressed").replaceChildren(...o.stressed.map(pro_link));
+}
+
+async function pro_choose(choice) {
+  if (o.answered) return;
+  Object.assign(o, {answered: true, choice});
+  pro_draw();
+  const it = o.items[o.at];
+  const res = await (await fetch("/pronouns/check", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({session: o.session, id: it.id, choice, ms: Math.round(performance.now() - o.started)}),
+  })).json();
+  o.results.push({...it, choice, ...res});
+  $("o-line").className = `gapline ${res.ok ? "ok" : "bad"}`;
+  $("o-feedback").innerHTML = res.ok
+    ? `<span class="ok">Верно</span> <span class="why">— ${escape(res.expected)}</span>`
+    : `<span class="bad">${escape(res.expected)}</span> <span class="why">— ${escape(res.use)}</span>`
+      + res.rules.map((r) => `<div class="rule">${escape(r)}</div>`).join("");
+  $("o-hint").textContent = "Enter — дальше";
+  if (res.ok) o.timer = setTimeout(pro_next, 900);
+}
+
+function pro_next() {
+  clearTimeout(o.timer);
+  o.at += 1;
+  if (o.at < o.items.length) return pro_show();
+  $("o-progress").style.width = "100%";
+  const wrong = o.results.filter((r) => !r.ok);
+  $("o-score").textContent = `${o.results.length - wrong.length} из ${o.results.length}`;
+  $("o-total").textContent = wrong.length ? "Ошибки следующий подход повторит чаще:" : "Без ошибок.";
+  $("o-mistakes").innerHTML = wrong.map((r) =>
+    `<li><span class="exp">${escape(r.expected)}</span> — <span class="ans">${escape(r.choice)}</span></li>`).join("");
+  const uses = new Map();
+  for (const r of o.results) {
+    const x = uses.get(r.use) || {ok: 0, tries: 0};
+    uses.set(r.use, {ok: x.ok + r.ok, tries: x.tries + 1});
+  }
+  $("o-uses").innerHTML = [...uses].map(([u, x]) => `<tr><td>${escape(u)}</td><td>${x.ok} из ${x.tries}</td></tr>`).join("");
+  $("o-card").classList.add("hidden");
+  $("o-done").classList.remove("hidden");
+  $("o-again").focus();
+}
+
+function pro_key(e) {
+  if (e.key !== "Enter") return;
+  e.preventDefault();
+  if (!$("o-done").classList.contains("hidden")) return pro_start();
+  if (o.answered && o.results.length > o.at) pro_next();  // ответ проверки ещё не пришёл — ждём
+}
+
+$("o-again").onclick = pro_start;
+$("o-toggle").onclick = () => $("o-rules").classList.toggle("open");
+
+// ── Род ────────────────────────────────────────────────────────────────
+const GEN_KIND = {rule: "правило", exception: "исключение", memorize: "без правила"};
+const r = {session: null, items: [], at: 0, results: [], answered: false, started: 0, timer: 0};
+
+async function gen_start() {
+  const data = await (await fetch("/gender/session")).json();
+  Object.assign(r, {session: data.session, items: data.items, at: 0, results: []});
+  $("r-again").textContent = `Ещё ${data.items.length}`;
+  $("r-done").classList.add("hidden");
+  $("r-card").classList.remove("hidden");
+  gen_show();
+}
+
+function gen_show() {
+  const it = r.items[r.at];
+  Object.assign(r, {answered: false, started: performance.now()});
+  $("r-count").textContent = `${r.at + 1} / ${r.items.length}`;
+  $("r-progress").style.width = `${100 * r.at / r.items.length}%`;
+  $("r-ru").textContent = it.ru;
+  $("r-prompt").textContent = `___ ${it.noun}`;
+  $("r-feedback").innerHTML = "";
+  $("r-hint").textContent = "1, 2 или клик";
+  $("r-options").replaceChildren(...it.pair.map((t, i) => {
+    const b = document.createElement("button");
+    b.innerHTML = `<i>${i + 1}</i>${escape(t)}`;
+    b.onclick = () => gen_choose(t);
+    return b;
+  }));
+}
+
+async function gen_choose(choice) {
+  if (r.answered) return;
+  r.answered = true;
+  for (const b of $("r-options").children) b.disabled = true;
+  const it = r.items[r.at];
+  const res = await (await fetch("/gender/check", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({session: r.session, id: it.id, choice, ms: Math.round(performance.now() - r.started)}),
+  })).json();
+  r.results.push({...it, choice, ...res});
+  $("r-prompt").textContent = res.expected;
+  $("r-feedback").innerHTML = (res.ok
+    ? `<span class="ok">Верно</span> <span class="why">— ${escape(res.use)}</span>`
+    : `<span class="bad">${escape(res.expected)}</span> <span class="why">— ${escape(GEN_KIND[res.kind])}, ${escape(res.use)}</span>`)
+    + res.rules.map((x) => `<div class="rule">${escape(x)}</div>`).join("");
+  $("r-hint").textContent = "Enter — дальше";
+  if (res.ok) r.timer = setTimeout(gen_next, 1400);
+}
+
+function gen_next() {
+  clearTimeout(r.timer);
+  r.at += 1;
+  if (r.at < r.items.length) return gen_show();
+  $("r-progress").style.width = "100%";
+  const wrong = r.results.filter((x) => !x.ok);
+  $("r-score").textContent = `${r.results.length - wrong.length} из ${r.results.length}`;
+  $("r-total").textContent = wrong.length ? "Ошибки следующий подход повторит чаще:" : "Без ошибок.";
+  $("r-mistakes").innerHTML = wrong.map((x) =>
+    `<li><span class="exp">${escape(x.expected)}</span> — <span class="ans">${escape(x.choice)}</span> <span class="why">${escape(GEN_KIND[x.kind])}</span></li>`).join("");
+  const uses = new Map();
+  for (const x of r.results) {
+    const y = uses.get(x.use) || {ok: 0, tries: 0};
+    uses.set(x.use, {ok: y.ok + x.ok, tries: y.tries + 1});
+  }
+  $("r-uses").innerHTML = [...uses].map(([u, y]) => `<tr><td>${escape(u)}</td><td>${y.ok} из ${y.tries}</td></tr>`).join("");
+  $("r-card").classList.add("hidden");
+  $("r-done").classList.remove("hidden");
+  $("r-again").focus();
+}
+
+function gen_key(e) {
+  if (!r.answered && !$("r-card").classList.contains("hidden") && (e.key === "1" || e.key === "2")) {
+    e.preventDefault();
+    return gen_choose(r.items[r.at].pair[Number(e.key) - 1]);
+  }
+  if (e.key !== "Enter") return;
+  e.preventDefault();
+  if (!$("r-done").classList.contains("hidden")) return gen_start();
+  if (r.answered && r.results.length > r.at) gen_next();  // ответ проверки ещё не пришёл — ждём
+}
+
+$("r-again").onclick = gen_start;
+$("r-toggle").onclick = () => $("r-rules").classList.toggle("open");
+$("tab-gen").onclick = () => open_tab("gen");
+
+// ── Артикли ────────────────────────────────────────────────────────────
+const ART_KIND = {gender: "род", form: "форма: число или элизия", type: "не тот артикль", de: "de после отрицания и количества"};
+const ART_LEVELS = ["un или une", "le или la", "+ l', les", "впервые → тот самый", "des или les", "вообще → le",
+                    "+ du, de la", "люблю le, ем du", "+ pas de", "исключения"];
+const t = {level: 1, session: null, items: [], panel: [], at: 0, results: [], answered: false, started: 0, timer: 0, choice: null};
+
+async function art_start() {
+  const data = await (await fetch(`/articles/session?level=${t.level}`)).json();
+  Object.assign(t, {session: data.session, items: data.items, panel: data.panel, at: 0, results: []});
+  $("t-again").textContent = `Ещё ${data.items.length}`;
+  $("t-done").classList.add("hidden");
+  $("t-card").classList.remove("hidden");
+  art_show();
+}
+
+function art_level(level) {
+  clearTimeout(t.timer);
+  t.level = level;
+  $("t-level").value = String(level);
+  try { localStorage.setItem("art-level", String(level)); } catch (e) {}
+  art_start();
+}
+
+function art_show() {
+  const it = t.items[t.at];
+  Object.assign(t, {answered: false, choice: null, started: performance.now()});
+  $("t-count").textContent = `${t.at + 1} / ${t.items.length}`;
+  $("t-progress").style.width = `${100 * t.at / t.items.length}%`;
+  $("t-ru").textContent = it.ru;
+  $("t-line").className = "gapline";
+  $("t-feedback").innerHTML = "";
+  $("t-hint").textContent = "Клик — ответ";
+  art_draw();
+}
+
+function art_draw() {
+  const it = t.items[t.at];
+  $("t-line").replaceChildren(...[it.before, t.choice ?? "___", it.after].filter(Boolean).map((x) => {
+    const word = document.createElement("span");
+    word.textContent = x;
+    return word;
+  }));
+  $("t-panel").replaceChildren(...t.panel.map((row) => {
+    const line = document.createElement("div");
+    line.className = "links";
+    const hint = document.createElement("span");
+    hint.className = "hint";
+    hint.textContent = row.row;
+    const keys = document.createElement("div");
+    keys.className = "keys";
+    keys.replaceChildren(...row.keys.map((x) => {
+      const b = document.createElement("button");
+      b.className = "tile";
+      b.textContent = x;
+      b.disabled = t.answered;
+      b.onclick = () => art_choose(x);
+      return b;
+    }));
+    line.replaceChildren(hint, keys);
+    return line;
+  }));
+}
+
+async function art_choose(choice) {
+  if (t.answered) return;
+  Object.assign(t, {answered: true, choice});
+  art_draw();
+  const it = t.items[t.at];
+  const res = await (await fetch("/articles/check", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({session: t.session, id: it.id, choice, ms: Math.round(performance.now() - t.started)}),
+  })).json();
+  t.results.push({...it, choice, ...res});
+  $("t-line").className = `gapline ${res.ok ? "ok" : "bad"}`;
+  $("t-feedback").innerHTML = (res.ok
+    ? `<span class="ok">Верно</span> <span class="why">— ${escape(res.use)}</span>`
+    : `<span class="bad">${escape(res.expected)}</span> <span class="why">— ${escape(ART_KIND[res.kind])}; ${escape(res.use)}</span>`)
+    + res.rules.map((x) => `<div class="rule">${escape(x)}</div>`).join("");
+  $("t-hint").textContent = "Enter — дальше";
+  if (res.ok) t.timer = setTimeout(art_next, 1400);
+}
+
+function art_next() {
+  clearTimeout(t.timer);
+  t.at += 1;
+  if (t.at < t.items.length) return art_show();
+  $("t-progress").style.width = "100%";
+  const wrong = t.results.filter((x) => !x.ok);
+  $("t-score").textContent = `${t.results.length - wrong.length} из ${t.results.length}`;
+  const kinds = new Map();
+  for (const x of wrong) kinds.set(x.kind, (kinds.get(x.kind) || 0) + 1);
+  $("t-total").textContent = wrong.length
+    ? `Ошибки: ${[...kinds].map(([k, n]) => `${ART_KIND[k]} — ${n}`).join(", ")}. Следующий подход повторит их чаще:`
+    : "Без ошибок.";
+  $("t-mistakes").innerHTML = wrong.map((x) =>
+    `<li><span class="exp">${escape(x.expected)}</span> — <span class="ans">${escape(x.choice)}</span> <span class="why">${escape(ART_KIND[x.kind])}</span></li>`).join("");
+  const uses = new Map();
+  for (const x of t.results) {
+    const y = uses.get(x.use) || {ok: 0, tries: 0};
+    uses.set(x.use, {ok: y.ok + x.ok, tries: y.tries + 1});
+  }
+  $("t-uses").innerHTML = [...uses].map(([u, y]) => `<tr><td>${escape(u)}</td><td>${y.ok} из ${y.tries}</td></tr>`).join("");
+  $("t-card").classList.add("hidden");
+  $("t-done").classList.remove("hidden");
+  $("t-again").focus();
+  art_pass();
+}
+
+async function art_pass() {
+  $("t-pass").textContent = "";
+  const lv = (await (await fetch("/articles/stats")).json()).levels[t.level];
+  if (!lv) return;
+  const last = lv.scores.slice(-5).join(", ");
+  $("t-pass").textContent = lv.closed
+    ? `Уровень ${t.level} закрыт (последние: ${last}).` + (t.level < ART_LEVELS.length ? ` Можно включать ${t.level + 1}: «${ART_LEVELS[t.level]}».` : "")
+    : `Уровень ${t.level}: последние подходы ${last}. Закрыт будет после двух подряд от 18.`;
+}
+
+function art_key(e) {
+  if (e.key !== "Enter") return;
+  e.preventDefault();
+  if (!$("t-done").classList.contains("hidden")) return art_start();
+  if (t.answered && t.results.length > t.at) art_next();  // ответ проверки ещё не пришёл — ждём
+}
+
+$("t-again").onclick = art_start;
+$("t-new").onclick = () => { clearTimeout(t.timer); art_start(); };
+$("t-level").replaceChildren(...ART_LEVELS.map((name, i) => {
+  const o = document.createElement("option");
+  o.value = String(i + 1);
+  o.textContent = `${i + 1}: ${name}`;
+  return o;
+}));
+$("t-level").onchange = () => art_level(Number($("t-level").value));
+$("t-toggle").onclick = () => $("t-rules").classList.toggle("open");
+$("tab-art").onclick = () => open_tab("art");
+try { t.level = Math.min(Math.max(Number(localStorage.getItem("art-level")) || 1, 1), 10); } catch (e) {}
+
+let saved = "conj";
+try { saved = localStorage.getItem("tab") || "conj"; } catch (e) {}
+open_tab(["words", "nums", "neg", "aux", "sent", "ade", "pro", "gen", "art"].includes(saved) ? saved : "conj");
+</script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "items": [
+    {"id": "presentation-001", "type": "write", "part": "pe", "topics": ["act.introduce", "act.personal-info"], "consigne": {"fr": "Vous écrivez à un nouveau correspondant français. Présentez-vous.", "ru": "Вы пишете новому другу по переписке из Франции. Представьтесь."}, "prompt": "Écrivez un message (40 mots minimum).", "points": ["votre nom", "votre âge", "votre nationalité et votre ville", "votre profession", "votre famille"], "min_words": 40, "source": {"by": "author", "ref": "delf-a1: PE упр. 2 — сообщение ≥ 40 слов"}}
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "docs": [
+    {"id": "message-lea", "kind": "message", "text": "Salut !\nJe m'appelle Léa Martin. J'ai vingt-six ans. Je suis française, de Lyon. Je suis infirmière.\nJe suis mariée, mon mari s'appelle Karim. Il est marocain. Nous avons une fille, Inès. Elle a quatre ans.\nÀ bientôt,\nLéa"}
+  ],
+  "items": [
+    {"id": "profil-001", "type": "number", "part": "ce", "doc": "message-lea", "topics": ["act.personal-info", "lex.personal-info", "lex.numbers-basic"], "consigne": "read-answer", "prompt": "Léa a quel âge ?", "answer": 26, "source": {"by": "author", "ref": "delf-a1: CE — короткое сообщение, по типу упр. 1"}},
+    {"id": "profil-002", "type": "choice", "part": "ce", "doc": "message-lea", "topics": ["act.personal-info", "lex.personal-info"], "consigne": "read-answer", "prompt": "Léa est de quelle ville ?", "options": ["Lyon", "Paris", "Marseille"], "answer": 0, "source": {"by": "author", "ref": "delf-a1: CE — короткое сообщение, по типу упр. 1"}},
+    {"id": "profil-003", "type": "choice", "part": "ce", "doc": "message-lea", "topics": ["act.personal-info", "lex.personal-info"], "consigne": "read-answer", "prompt": "Quelle est la profession de Léa ?", "options": ["professeur", "infirmière", "médecin"], "answer": 1, "source": {"by": "author", "ref": "delf-a1: CE — короткое сообщение, по типу упр. 1"}},
+    {"id": "profil-004", "type": "short", "part": "ce", "doc": "message-lea", "topics": ["act.personal-info", "lex.personal-info"], "consigne": "read-answer", "prompt": "Comment s'appelle le mari de Léa ?", "accept": ["Karim"], "source": {"by": "author", "ref": "delf-a1: CE — короткое сообщение, по типу упр. 1"}},
+    {"id": "profil-005", "type": "choice", "part": "ce", "doc": "message-lea", "topics": ["act.personal-info", "lex.countries"], "consigne": "read-answer", "prompt": "Karim est…", "options": ["français", "canadien", "marocain"], "answer": 2, "source": {"by": "author", "ref": "delf-a1: CE — короткое сообщение, по типу упр. 1"}},
+    {"id": "profil-006", "type": "number", "part": "ce", "doc": "message-lea", "topics": ["act.personal-info", "lex.personal-info", "lex.numbers-basic"], "consigne": "read-answer", "prompt": "Inès a quel âge ?", "answer": 4, "source": {"by": "author", "ref": "delf-a1: CE — короткое сообщение, по типу упр. 1"}}
+  ]
+}
