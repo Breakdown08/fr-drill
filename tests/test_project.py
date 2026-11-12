@@ -34,7 +34,7 @@ def test_project_metadata() -> None:
 def test_dev_group() -> None:
     dev: list[str] = pyproject()["dependency-groups"]["dev"]
     names: set[str] = {d.split(">")[0].split("=")[0].split("<")[0].strip() for d in dev}
-    assert names == {"mypy", "pytest", "ruff", "ty"}
+    assert names == {"mypy", "pytest", "ruff", "ty", "qdrant-client"}
 
 
 def test_tool_sections_as_in_the_requirements() -> None:

@@ -7,6 +7,9 @@ license = "Apache-2.0"
 requires-python = ">=3.14"
 dependencies = ["pypdf"]
 
+[project.optional-dependencies]
+rag = ["fastembed>=0.9", "qdrant-client>=1.20"]
+
 [project.scripts]
 fr-drill = "fr_drill.cli:main"
 
@@ -15,7 +18,7 @@ requires = ["uv_build>=0.12.11,<0.13.0"]
 build-backend = "uv_build"
 
 [dependency-groups]
-dev = ["mypy", "pytest", "ruff", "ty"]
+dev = ["mypy", "pytest", "qdrant-client>=1.20", "ruff", "ty"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -55,7 +55,36 @@ def build_parser() -> argparse.ArgumentParser:
     ovl.add_argument(
         "--sentence", type=int, default=5, help="shortest French sentence found whole (default 5)"
     )
+    idx: argparse.ArgumentParser = sub.add_parser("index", help="index a textbook PDF for search")
+    idx.add_argument("pdf", type=Path, help="the textbook PDF")
+    sel: argparse._MutuallyExclusiveGroup = idx.add_mutually_exclusive_group()
+    sel.add_argument("--pages", help="printed page labels to index, A-B or A")
+    sel.add_argument("--chapter", help="top-level chapter number to index")
+    _add_store(idx)
+    sea: argparse.ArgumentParser = sub.add_parser("search", help="find textbook passages for a query")
+    sea.add_argument("query", help="the query, in any language")
+    sea.add_argument("--k", type=int, default=5, help="number of passages (default 5)")
+    sea.add_argument("--json", action="store_true", help="print JSON")
+    _add_store(sea)
+    ask: argparse.ArgumentParser = sub.add_parser(
+        "ask", help="answer a question from the textbook, with page references"
+    )
+    ask.add_argument("question", help="the question")
+    ask.add_argument("--backend", choices=["ollama", "claude"], default="ollama", help="default ollama")
+    ask.add_argument("--model", help="model name for the backend")
+    ask.add_argument("--k", type=int, default=5, help="number of passages (default 5)")
+    _add_store(ask)
+    ev: argparse.ArgumentParser = sub.add_parser("eval", help="recall@k of search over a question set")
+    ev.add_argument("file", nargs="?", type=Path, help="eval JSON (default data/rag/eval.json)")
+    ev.add_argument("--k", type=int, default=5, help="top k (default 5)")
+    ev.add_argument("--json", action="store_true", help="print JSON")
+    _add_store(ev)
     return parser
+
+
+def _add_store(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--index", type=Path, help="index directory (default index/)")
+    p.add_argument("--qdrant-url", help="use a Qdrant server instead of the local index")
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -80,6 +109,24 @@ def main(argv: list[str] | None = None) -> None:
         from fr_drill import overlap
 
         raise SystemExit(overlap.main(args.book, args.files, args.run, args.sentence))
+    elif args.command in ("index", "search", "ask", "eval"):
+        try:
+            from fr_drill import rag
+        except ImportError:
+            print("fr-drill: install the helper with: uv sync --extra rag", file=sys.stderr)
+            raise SystemExit(2) from None
+        index: Path = args.index if args.index is not None else rag.INDEX
+        if args.command == "index":
+            raise SystemExit(rag.cmd_index(args.pdf, args.pages, args.chapter, index, args.qdrant_url))
+        elif args.command == "search":
+            raise SystemExit(rag.cmd_search(args.query, args.k, args.json, index, args.qdrant_url))
+        elif args.command == "ask":
+            raise SystemExit(
+                rag.cmd_ask(args.question, args.backend, args.model, args.k, index, args.qdrant_url)
+            )
+        else:
+            file: Path = args.file if args.file is not None else rag.EVAL
+            raise SystemExit(rag.cmd_eval(file, args.k, args.json, index, args.qdrant_url))
 
 
 if __name__ == "__main__":

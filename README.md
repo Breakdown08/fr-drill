@@ -67,13 +67,51 @@ it. Format:
 - A lesson with `own_drill` belongs to another tab (numbers) and gives no word cards.
 - Each word is one card and appears once in the file.
 
+## Textbook helper
+
+Ask a question about a textbook (in Russian, for example) and get an explanation with page references.
+The helper reads a PDF, splits it into chunks that never cross a page, embeds them, stores them in a
+Qdrant index and, for `ask`, passes the best chunks to a language model.
+
+```
+uv sync --extra rag
+uv run --extra rag fr-drill index books/heminway.pdf --chapter 21   # or --pages 1-12 (printed page labels)
+uv run --extra rag fr-drill search "c'est или il est перед прилагательным" --k 3
+uv run --extra rag fr-drill ask "почему c'est, а не il est?" --backend ollama
+uv run --extra rag fr-drill eval data/rag/eval.json --k 5
+```
+
+- Embeddings: `intfloat/multilingual-e5-large` (ONNX build `Qdrant/multilingual-e5-large-onnx`, run by
+  fastembed, no torch), about 2.2 GB, downloaded once to `index/models/`. Checked with revision
+  `ac6781cd1cf88b8306a536d7c9d18a5bd57cc14b` of `Qdrant/multilingual-e5-large-onnx`; SHA-256 of
+  `model.onnx` `1c09780c907c8a91a77a6ab1fd231f79e090d2907ca431223703dfebeed3d36c`, of
+  `model.onnx_data` `0cf1883fee81c63819a44e2ba0efa51d4043d9759685a4ebebbde97e0623d15c`.
+- The index is a local Qdrant in `index/qdrant/`. To use a server instead, add `--qdrant-url URL` to
+  every command.
+- Backend `ollama` (default model `gemma3:4b`, `--model` changes it) talks to `http://localhost:11434`:
+
+  ```
+  docker run -d -p 11434:11434 -v ollama:/root/.ollama --name ollama ollama/ollama
+  docker exec ollama ollama pull gemma3:4b
+  ```
+
+- Ollama needs no Python package: the helper only calls its HTTP API.
+- Backend `claude` runs the Claude Code CLI (`claude -p`), which has to be installed.
+- The eval file `data/rag/eval.json` is `{"items": [{"q": "...", "pages": ["308"]}, ...]}` with printed
+  page labels. `fr-drill eval` prints recall@k and the share of questions with at least one hit.
+  On chapter 21 of the Heminway textbook (30 pages, 62 chunks) the eval set in the repository gives
+  recall@5 0.955 and hit@5 1.000 over 11 questions: `fr-drill index <pdf> --chapter 21`, then the
+  command above. One chapter is a small haystack; the figure says the pipeline works, not that it
+  scales to the whole book.
+
 ## Personal data
 
 Progress is written as JSON lines to `progress/` (one file per tab, `exam.jsonl` and
 `exam-grades.jsonl` for the test). Set `FR_DRILL_PROGRESS` to keep it elsewhere. The directory is
 created on the first answer.
 
-`books/` and `index/` are reserved for a helper over textbooks that does not exist yet. All of
+`books/` holds your textbook PDFs and `index/` the search index and the embedding model of the textbook
+helper (see below). All of
 `progress/`, `books/`, `index/` and `data/drills/vocab.json` are in `.gitignore`.
 
 Both variables are read once, when the package is imported. A relative path counts from the current
@@ -96,7 +134,10 @@ the words and keeps the letter. A reviewer (a teacher, or any assistant) grades 
   the browser has a French voice.
 - A letter is not graded by the program (see above).
 - The explanations are in Russian only.
-- There is no assistant over textbooks and no other language backend yet.
+- The textbook helper has no "I don't know" threshold: it says there is no answer only when the index is
+  empty, otherwise the prompt asks the model to be honest.
+- Running headers and footers of the PDF end up in the chunks.
+- There is no OCR: a scanned PDF without a text layer gives nothing to index.
 
 ## Sources and licenses
 

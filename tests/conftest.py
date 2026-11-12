@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from rag_fakes import REAL
 from util import ROOT, serving
 
 import fr_drill
@@ -98,3 +99,21 @@ def live(tmp_path: Path, verbs: list[dict[str, Any]], cards: list[dict[str, Any]
     port: int
     with serving(make) as port:
         yield Live(port, t)
+
+
+@pytest.fixture(autouse=True)
+def no_real_backends(monkeypatch: pytest.MonkeyPatch) -> None:
+    """No test may download a model or start a generator by accident."""
+    from fr_drill import rag
+
+    REAL["make_embedder"] = rag.make_embedder
+    REAL["make_generator"] = rag.make_generator
+
+    def no_embedder(*args: object, **kwargs: object) -> None:
+        pytest.fail("the real embedder was requested")
+
+    def no_generator(*args: object, **kwargs: object) -> None:
+        pytest.fail("the real generator was requested")
+
+    monkeypatch.setattr(rag, "make_embedder", no_embedder)
+    monkeypatch.setattr(rag, "make_generator", no_generator)

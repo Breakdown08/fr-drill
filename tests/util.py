@@ -111,3 +111,32 @@ def call(
         return resp.status, json.loads(raw)
     text: str = raw.decode()
     return resp.status, (json.loads(text) if text.startswith(("{", "[")) else text)
+
+
+def minimal_pdf(pages: list[str]) -> bytes:
+    """A small valid PDF, one line of Helvetica text per page."""
+    n: int = len(pages)
+    objs: list[bytes] = [b"<< /Type /Catalog /Pages 2 0 R >>"]
+    kids: str = " ".join(f"{3 + 2 * i} 0 R" for i in range(n))
+    objs.append(f"<< /Type /Pages /Kids [{kids}] /Count {n} >>".encode())
+    i: int
+    text: str
+    for i, text in enumerate(pages):
+        content: bytes = f"BT /F1 12 Tf 72 720 Td ({text}) Tj ET".encode()
+        objs.append(
+            f"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents {4 + 2 * i} 0 R "
+            "/Resources << /Font << /F1 << /Type /Font /Subtype /Type1 "
+            "/BaseFont /Helvetica >> >> >> >>".encode()
+        )
+        objs.append(b"<< /Length %d >>\nstream\n" % len(content) + content + b"\nendstream")
+    out: bytes = b"%PDF-1.4\n"
+    offsets: list[int] = []
+    body: bytes
+    for i, body in enumerate(objs, start=1):
+        offsets.append(len(out))
+        out += b"%d 0 obj\n" % i + body + b"\nendobj\n"
+    xref: int = len(out)
+    out += b"xref\n0 %d\n0000000000 65535 f \n" % (len(objs) + 1)
+    out += b"".join(b"%010d 00000 n \n" % o for o in offsets)
+    out += b"trailer\n<< /Size %d /Root 1 0 R >>\nstartxref\n%d\n%%%%EOF\n" % (len(objs) + 1, xref)
+    return out
