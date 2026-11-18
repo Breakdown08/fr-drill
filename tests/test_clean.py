@@ -11,6 +11,7 @@ SKIP_DIRS: set[str] = {
     "progress",
     "books",
     "index",
+    "runs",
     "__pycache__",
     ".pytest_cache",
     ".mypy_cache",

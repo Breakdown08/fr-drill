@@ -82,7 +82,7 @@ def test_ci_triggers_and_actions() -> None:
 def test_gitignore_lines() -> None:
     lines: list[str] = (ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
     want: str
-    for want in ("/progress/", "/books/", "/index/", "/data/drills/vocab.json"):
+    for want in ("/progress/", "/books/", "/index/", "/runs/", "/data/drills/vocab.json"):
         assert want in lines, want
 
 

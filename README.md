@@ -104,6 +104,77 @@ uv run --extra rag fr-drill eval data/rag/eval.json --k 5
   command above. One chapter is a small haystack; the figure says the pipeline works, not that it
   scales to the whole book.
 
+### Evaluating the answers
+
+`fr-drill eval` measures only search. `fr-drill answer-eval` runs a question set through the same
+pipeline as `ask` (search, prompt, generator), grades every answer with code and saves the run:
+
+```
+uv run --extra rag fr-drill answer-eval --backend ollama --out runs/gemma-q4.json
+uv run --extra rag fr-drill answer-eval --backend claude --model haiku --limit 3
+uv run fr-drill answer-report runs/gemma-q8.json runs/gemma-q4.json
+```
+
+- `data/rag/answers.json` has 74 questions about chapter 21 with checkable facts and 5 questions outside
+  the textbook, for which the right answer is the refusal. An item is
+  `{"id", "q", "chapter", "pages", "must", "forbid"}`. `must` is a list of facts, a fact is a list of
+  alternatives, and a fact is covered when the answer contains at least one of them. A pattern is a
+  string of at most 4 words; a final `*` means "beginning of a word" (`женск*` matches `женского`).
+  Matching ignores case, `ё`/`е`, quotes and markdown emphasis. `forbid` lists wrong forms: finding one
+  is an error. An item with `"expect": "no_answer"` is right only if the answer is the refusal.
+  `fr-drill eval data/rag/answers.json` works too: it skips the `no_answer` items.
+- Runs go to `runs/` (in `.gitignore`: they hold quotes from the textbook). A run keeps answers, grades,
+  search and generation times. `answer-report A [B]` re-grades saved answers against the current
+  question set, no generation needed; for two runs it prints the paired difference of the scores with a
+  95% bootstrap interval. It needs no extra.
+- Metrics: `score` is the mean share of covered facts (the main one); `pass` the share of answers with
+  all facts and no wrong form; `wrong` the share with a wrong form; `false-refusal` the share of answers
+  that refuse although the textbook has the answer; `no-answer accuracy` the share of out-of-book
+  questions refused; `cited` the share of answers with a page reference `(с. N)`; `in-context` the share
+  of cited pages that were among the retrieved ones; `expected-page` the share of answers citing a page
+  where the answer is.
+- Generation is greedy for Ollama (temperature 0, seed 0). `claude -p` has no temperature flag, so its
+  runs are not repeatable.
+- Limits: string matching is not understanding. A correct explanation in other words can lose points, a
+  wrong one that contains the right forms can earn them. Diacritics are strict (`a pied` is not
+  `à pied`). With 74 questions only a difference of about 0.07 to 0.10 in the mean score can be told
+  from noise.
+
+### Measured
+
+Chapter 21 of Heminway (30 pages, 62 chunks), k=5, 74 answer items and 5 out-of-book items, on a
+laptop CPU (Intel Core Ultra 7 155H, 22 threads, no GPU), 2026-11-18. Search alone on the same 74
+questions: recall@5 0.912, hit@5 0.946 (`fr-drill eval data/rag/answers.json`).
+
+| | `gemma3:4b` (Ollama, CPU) | `haiku` (`claude -p`) |
+|---|---|---|
+| score | 0.359 | 0.881 |
+| pass | 0.284 | 0.851 |
+| wrong | 0.000 | 0.000 |
+| false-refusal | 0.365 | 0.108 |
+| no-answer accuracy (5) | 1.000 | 1.000 |
+| cited | 0.662 | 0.905 |
+| in-context | 0.969 | 1.000 |
+| expected-page | 0.568 | 0.905 |
+| generation, median per answer | 22.1 s | 6.4 s |
+
+- Haiku minus gemma: score +0.521, 95% interval [+0.417, +0.626], better on 45 questions, worse on
+  none (`fr-drill answer-report runs/gemma.json runs/haiku.json`).
+- Two full gemma runs gave identical answers on all 79 items (difference 0.000): greedy Ollama runs
+  can be compared with each other.
+- Gemma mostly loses by refusing (27 of 74) or by giving the bare rule without the example forms
+  the item asks for; it never gave a forbidden form. Of the 8 haiku refusals, 4 are search misses
+  (the page with the answer was not in the top 5); in the other 4 the right page was retrieved, but
+  not necessarily the chunk with the answer.
+- After reading the answers by eye, items that asked only for a preposition or a meaning were relaxed
+  to accept the bare answer (`предлог sur`), and one item that gave points to an off-topic answer was
+  tightened; the figures above are re-graded with the current set.
+- The local Qdrant index can be open in one process only. To run two evals at once, copy `index/`
+  and pass `--index` to one of them, or use `--qdrant-url`.
+- `fr-drill overlap` reports two sentences in the facts, `c'est interdit de fumer` and
+  `c'est dur de plaire`: the apostrophe splits `c'est` into two words, so a four-word fact counts as
+  a five-word sentence. Both are kept as short example forms.
+
 ## Personal data
 
 Progress is written as JSON lines to `progress/` (one file per tab, `exam.jsonl` and
@@ -111,8 +182,8 @@ Progress is written as JSON lines to `progress/` (one file per tab, `exam.jsonl`
 created on the first answer.
 
 `books/` holds your textbook PDFs and `index/` the search index and the embedding model of the textbook
-helper (see below). All of
-`progress/`, `books/`, `index/` and `data/drills/vocab.json` are in `.gitignore`.
+helper (see below); `runs/` holds the saved runs of `fr-drill answer-eval`. All of
+`progress/`, `books/`, `index/`, `runs/` and `data/drills/vocab.json` are in `.gitignore`.
 
 Both variables are read once, when the package is imported. A relative path counts from the current
 directory.
@@ -136,6 +207,7 @@ the words and keeps the letter. A reviewer (a teacher, or any assistant) grades 
 - The explanations are in Russian only.
 - The textbook helper has no "I don't know" threshold: it says there is no answer only when the index is
   empty, otherwise the prompt asks the model to be honest.
+- The answer eval checks forms and concepts by string matching, not the quality of an explanation.
 - Running headers and footers of the PDF end up in the chunks.
 - There is no OCR: a scanned PDF without a text layer gives nothing to index.
 
@@ -149,6 +221,7 @@ Code and own data are under Apache 2.0 (see `LICENSE`).
 | `data/syllabus/topics.json` | own text; the map of topics follows *Inventaire linguistique des contenus clés des niveaux du CECRL* (Eaquals, CIEP, Eurocentres, ACPLS, 2015), appendix E | Apache 2.0 |
 | `data/reference/delf-a1.md` | own summary of the format of DELF A1 | Apache 2.0 |
 | `a-de-verbs.json` | verbs and their government checked against [irgol.ru](https://irgol.ru/grammaticheskij-spravochnik/upravlenie-glagolov-i-glagolnyh-vyr/); the sentences are own | Apache 2.0 |
+| `data/rag/answers.json` | own questions; the facts are short forms (up to 4 words) from chapter 21 of Heminway, *Complete French All-in-One* (2018); checked with `fr-drill overlap` | Apache 2.0 |
 | `articles.json`, `gender.json` | explanations after Annie Heminway, *Complete French All-in-One* (2018): chapter references only, no text reproduced; checked with `fr-drill overlap` | Apache 2.0 |
 
 `fr-drill overlap` compares the strings of JSON files with the text of a book (PDF or text) and

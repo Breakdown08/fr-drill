@@ -8,7 +8,7 @@ from typing import Any
 import pytest
 from util import ROOT, run_cli, run_py
 
-COMMANDS: list[str] = ["index", "search", "ask", "eval"]
+COMMANDS: list[str] = ["index", "search", "ask", "eval", "answer-eval"]
 
 
 def pyproject() -> dict[str, Any]:
@@ -98,6 +98,8 @@ README_MUST: list[str] = [
     "fr-drill search",
     "fr-drill ask",
     "fr-drill eval",
+    "fr-drill answer-eval",
+    "fr-drill answer-report",
     "multilingual-e5-large",
     "Ollama",
     "index/models/",

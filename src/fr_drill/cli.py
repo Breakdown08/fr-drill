@@ -4,6 +4,8 @@ import argparse
 import sys
 from pathlib import Path
 
+BACKENDS: list[str] = ["ollama", "claude"]
+
 
 def build_parser() -> argparse.ArgumentParser:
     parser: argparse.ArgumentParser = argparse.ArgumentParser(
@@ -70,7 +72,7 @@ def build_parser() -> argparse.ArgumentParser:
         "ask", help="answer a question from the textbook, with page references"
     )
     ask.add_argument("question", help="the question")
-    ask.add_argument("--backend", choices=["ollama", "claude"], default="ollama", help="default ollama")
+    ask.add_argument("--backend", choices=BACKENDS, default="ollama", help="default ollama")
     ask.add_argument("--model", help="model name for the backend")
     ask.add_argument("--k", type=int, default=5, help="number of passages (default 5)")
     _add_store(ask)
@@ -79,6 +81,24 @@ def build_parser() -> argparse.ArgumentParser:
     ev.add_argument("--k", type=int, default=5, help="top k (default 5)")
     ev.add_argument("--json", action="store_true", help="print JSON")
     _add_store(ev)
+    ae: argparse.ArgumentParser = sub.add_parser(
+        "answer-eval", help="grade the helper's answers over a question set and save the run"
+    )
+    ae.add_argument("file", nargs="?", type=Path, help="answer set JSON (default data/rag/answers.json)")
+    ae.add_argument("--backend", choices=BACKENDS, default="ollama", help="default ollama")
+    ae.add_argument("--model", help="model name for the backend")
+    ae.add_argument("--k", type=int, default=5, help="number of passages (default 5)")
+    ae.add_argument("--limit", type=int, help="use only the first N questions")
+    ae.add_argument("--out", type=Path, help="run file (default runs/answers-BACKEND-MODEL-TIME.json)")
+    ae.add_argument("--json", action="store_true", help="print the run as JSON")
+    _add_store(ae)
+    ar: argparse.ArgumentParser = sub.add_parser(
+        "answer-report", help="re-grade saved runs; compare two of them"
+    )
+    ar.add_argument("run", type=Path, help="run file written by answer-eval")
+    ar.add_argument("other", nargs="?", type=Path, help="second run file, to compare with the first")
+    ar.add_argument("--items", type=Path, help="answer set JSON (default data/rag/answers.json)")
+    ar.add_argument("--json", action="store_true", help="print JSON")
     return parser
 
 
@@ -109,7 +129,12 @@ def main(argv: list[str] | None = None) -> None:
         from fr_drill import overlap
 
         raise SystemExit(overlap.main(args.book, args.files, args.run, args.sentence))
-    elif args.command in ("index", "search", "ask", "eval"):
+    elif args.command == "answer-report":
+        from fr_drill import answers
+
+        items: Path = args.items if args.items is not None else answers.ANSWERS
+        raise SystemExit(answers.cmd_report(args.run, args.other, items, args.json))
+    elif args.command in ("index", "search", "ask", "eval", "answer-eval"):
         try:
             from fr_drill import rag
         except ImportError:
@@ -123,6 +148,23 @@ def main(argv: list[str] | None = None) -> None:
         elif args.command == "ask":
             raise SystemExit(
                 rag.cmd_ask(args.question, args.backend, args.model, args.k, index, args.qdrant_url)
+            )
+        elif args.command == "answer-eval":
+            from fr_drill import answers as answers_mod
+
+            afile: Path = args.file if args.file is not None else answers_mod.ANSWERS
+            raise SystemExit(
+                rag.cmd_answer_eval(
+                    afile,
+                    args.backend,
+                    args.model,
+                    args.k,
+                    args.limit,
+                    args.out,
+                    args.json,
+                    index,
+                    args.qdrant_url,
+                )
             )
         else:
             file: Path = args.file if args.file is not None else rag.EVAL

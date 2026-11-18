@@ -4,16 +4,20 @@ import dataclasses
 import importlib
 import json
 import logging
+import os
+import platform
 import re
 import subprocess
 import sys
+import time
 import urllib.error
 import urllib.request
 import uuid
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Protocol, runtime_checkable
 
 from pypdf import PdfReader
 from qdrant_client import QdrantClient
@@ -28,7 +32,9 @@ from qdrant_client.models import (
     VectorParams,
 )
 
-from fr_drill import DATA, ROOT
+from fr_drill import DATA, ROOT, answers
+from fr_drill.answers import NO_ANSWER as NO_ANSWER
+from fr_drill.answers import AnswerItem, AnswerRow, Grade
 
 INDEX: Path = ROOT / "index"
 EVAL: Path = DATA / "rag" / "eval.json"
@@ -42,7 +48,7 @@ OLLAMA_URL: str = "http://localhost:11434"
 OLLAMA_MODEL: str = "gemma3:4b"
 OLLAMA_NUM_CTX: int = 8192
 CLAUDE_MODEL: str = "haiku"
-NO_ANSWER: str = "В найденных фрагментах учебника ответа нет."
+EVAL_SEED: int = 0
 
 
 class RagError(Exception):
@@ -112,6 +118,32 @@ class Embedder(Protocol):
 
 class Generator(Protocol):
     def generate(self, prompt: str) -> str: ...
+
+
+@runtime_checkable
+class MeteredGenerator(Protocol):
+    def generate_metered(self, prompt: str) -> tuple[str, dict[str, float]]: ...
+
+
+@dataclass(frozen=True)
+class Generation:
+    text: str
+    seconds: float
+    stats: dict[str, float]
+
+
+def timed_generate(
+    generator: Generator, prompt: str, clock: Callable[[], float] = time.perf_counter
+) -> Generation:
+    c0: float = clock()
+    text: str
+    stats: dict[str, float]
+    if isinstance(generator, MeteredGenerator):
+        text, stats = generator.generate_metered(prompt)
+    else:
+        text, stats = generator.generate(prompt), {}
+    c1: float = clock()
+    return Generation(text.strip(), c1 - c0, stats)
 
 
 def read_pages(pdf: Path) -> list[Page]:
@@ -409,7 +441,19 @@ def ask(
 
 
 class OllamaGenerator:
-    def __init__(self, model: str = OLLAMA_MODEL, url: str = OLLAMA_URL, timeout: float = 600.0) -> None:
+    def __init__(
+        self,
+        model: str = OLLAMA_MODEL,
+        url: str = OLLAMA_URL,
+        timeout: float = 600.0,
+        temperature: float | None = None,
+        seed: int | None = None,
+    ) -> None:
+        self.options: dict[str, float] = {"num_ctx": OLLAMA_NUM_CTX}
+        if temperature is not None:
+            self.options["temperature"] = temperature
+        if seed is not None:
+            self.options["seed"] = seed
         self.model: str = model
         self.url: str = url
         self.timeout: float = timeout
@@ -421,7 +465,7 @@ class OllamaGenerator:
                 "model": self.model,
                 "prompt": prompt,
                 "stream": False,
-                "options": {"num_ctx": OLLAMA_NUM_CTX},
+                "options": self.options,
             }
         ).encode()
         req: urllib.request.Request = urllib.request.Request(
@@ -446,6 +490,7 @@ class OllamaGenerator:
 
 class ClaudeGenerator:
     def __init__(self, model: str = CLAUDE_MODEL, command: str = "claude", timeout: float = 600.0) -> None:
+        self.options: dict[str, float] = {}
         self.model: str = model
         self.command: str = command
         self.timeout: float = timeout
@@ -470,12 +515,17 @@ class ClaudeGenerator:
         return proc.stdout.strip()
 
 
-def make_generator(backend: str, model: str | None = None) -> Generator:
+def make_generator(backend: str, model: str | None = None, deterministic: bool = False) -> Generator:
     if backend == "ollama":
+        if deterministic:
+            return OllamaGenerator(model or OLLAMA_MODEL, temperature=0.0, seed=EVAL_SEED)
         return OllamaGenerator(model or OLLAMA_MODEL)
     if backend == "claude":
         return ClaudeGenerator(model or CLAUDE_MODEL)
     raise ValueError(f"unknown backend: {backend!r}")
+
+
+DEFAULT_MODEL: dict[str, str] = {"ollama": OLLAMA_MODEL, "claude": CLAUDE_MODEL}
 
 
 def load_eval(path: Path) -> list[EvalItem]:
@@ -492,6 +542,8 @@ def load_eval(path: Path) -> list[EvalItem]:
     i: int
     it: Any
     for i, it in enumerate(raw):
+        if isinstance(it, dict) and it.get("expect") == "no_answer":
+            continue
         if not isinstance(it, dict):
             raise RagError(f"eval item {i}: must be an object")
         q: Any = it.get("q")
@@ -501,6 +553,8 @@ def load_eval(path: Path) -> list[EvalItem]:
         if not isinstance(pages, list) or not pages or not all(isinstance(p, str) and p for p in pages):
             raise RagError(f"eval item {i}: 'pages' must be a non-empty list of strings")
         items.append(EvalItem(q=q, pages=list(pages)))
+    if not items:
+        raise RagError(f"eval file {path}: no items with an answer")
     return items
 
 
@@ -630,4 +684,111 @@ def cmd_eval(file: Path, k: int, as_json: bool, index: Path, url: str | None) ->
     for r in report.rows:
         print(f"{r.recall:.2f}  {r.q}  expected {r.expected} got {r.retrieved}")
     print(f"recall@{k} = {report.recall:.3f}  hit@{k} = {report.hit_rate:.3f}  (n={len(report.rows)})")
+    return 0
+
+
+def answer_eval(
+    items: Sequence[AnswerItem],
+    client: QdrantClient,
+    embedder: Embedder,
+    generator: Generator,
+    k: int = K,
+    collection: str = COLLECTION,
+    clock: Callable[[], float] = time.perf_counter,
+    progress: Callable[[AnswerRow], None] | None = None,
+) -> list[AnswerRow]:
+    if not items:
+        raise ValueError("no items to evaluate")
+    rows: list[AnswerRow] = []
+    item: AnswerItem
+    for item in items:
+        t0: float = clock()
+        hits: list[Hit] = search(item.q, client, embedder, k=k, collection=collection)
+        t1: float = clock()
+        retrieved: list[str] = [h.chunk.page for h in hits]
+        text: str
+        seconds: float
+        stats: dict[str, float]
+        if hits:
+            g: Generation = timed_generate(generator, build_prompt(item.q, hits), clock)
+            text, seconds, stats = g.text, g.seconds, g.stats
+        else:
+            text, seconds, stats = NO_ANSWER, 0.0, {}
+        grade: Grade = answers.score_answer(item, text, retrieved)
+        row: AnswerRow = AnswerRow(
+            id=item.id,
+            q=item.q,
+            expect=item.expect,
+            retrieved=retrieved,
+            answer=text,
+            retrieve_s=t1 - t0,
+            generate_s=seconds,
+            stats=stats,
+            grade=grade,
+        )
+        rows.append(row)
+        if progress is not None:
+            progress(row)
+    return rows
+
+
+def cmd_answer_eval(
+    file: Path,
+    backend: str,
+    model: str | None,
+    k: int,
+    limit: int | None,
+    out: Path | None,
+    as_json: bool,
+    index: Path,
+    url: str | None,
+) -> int:
+    def show(row: AnswerRow) -> None:
+        print(f"{row.grade.score:.2f}  {row.generate_s:.1f} s  {row.id}", file=sys.stderr, flush=True)
+
+    try:
+        items: list[AnswerItem] = answers.load_items(file)
+        if limit is not None:
+            if limit < 1:
+                raise ValueError("--limit must be at least 1")
+            items = items[:limit]
+        generator: Generator = make_generator(backend, model, deterministic=True)
+        model_name: str = model or DEFAULT_MODEL[backend]
+        client: QdrantClient = open_client(index, url)
+        try:
+            if not client.collection_exists(COLLECTION):
+                raise RagError("no index yet: run fr-drill index first")
+            points: int = client.count(COLLECTION).count
+            rows: list[AnswerRow] = answer_eval(
+                items, client, make_embedder(index / "models"), generator, k=k, progress=show
+            )
+        finally:
+            client.close()
+        now: datetime = datetime.now(UTC)
+        run: answers.Run = answers.Run(
+            schema=answers.SCHEMA,
+            created=now.isoformat(timespec="seconds"),
+            backend=backend,
+            model=model_name,
+            options=dict(getattr(generator, "options", {})),
+            k=k,
+            index_points=points,
+            items_file=str(file),
+            items_sha256=answers.items_sha256(file),
+            platform=platform.platform(),
+            cpus=os.cpu_count(),
+            summary=answers.summarize(rows),
+            rows=rows,
+        )
+        path: Path = out if out is not None else answers.default_run_path(backend, model_name, now)
+        answers.write_run(run, path)
+    except (RagError, answers.AnswerError, ValueError) as e:
+        return _fail(e)
+    print(f"wrote {path}", file=sys.stderr)
+    if as_json:
+        print(json.dumps(dataclasses.asdict(run), ensure_ascii=False))
+    else:
+        line: str
+        for line in answers.format_summary(run.summary):
+            print(line)
     return 0
